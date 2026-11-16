@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-#[Fillable(['context_id', 'user_id', 'name', 'recipe_link', 'comment', 'status'])]
+#[Fillable(['context_id', 'user_id', 'name', 'recipe_link', 'comment', 'status', 'calendar_date_id', 'planned_at'])]
 class Meal extends Model
 {
     /** @use HasFactory<MealFactory> */
@@ -37,6 +37,16 @@ class Meal extends Model
     }
 
     /**
+     * The day a planned meal is on.
+     *
+     * @return BelongsTo<CalendarDate, $this>
+     */
+    public function calendarDate(): BelongsTo
+    {
+        return $this->belongsTo(CalendarDate::class);
+    }
+
+    /**
      * @return BelongsTo<Context, $this>
      */
     public function context(): BelongsTo
@@ -59,6 +69,7 @@ class Meal extends Model
     {
         return [
             'status' => MealStatus::class,
+            'planned_at' => 'datetime',
         ];
     }
 }

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CalendarDate;
+use App\Services\CalendarService;
 use App\Services\ThreadService;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class HomeController extends Controller
 {
-    public function __invoke(Request $request, ThreadService $threads): View
+    public function __invoke(Request $request, ThreadService $threads, CalendarService $calendar): View
     {
         $showingArchived = $request->boolean('archived');
         $data = [
@@ -25,6 +25,13 @@ class HomeController extends Controller
             return view('components.thread-list', $data);
         }
 
-        return view('home', [...$data, ...CalendarDate::forHome()]);
+        $days = $calendar->days($request->user(), now(), CalendarService::HORIZON);
+
+        return view('home', [
+            ...$data,
+            'today' => $days->get(0),
+            'tomorrow' => $days->get(1),
+            'days' => $days->slice(2)->values(),
+        ]);
     }
 }

@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'notices' => 'Notiser',
+    'all' => 'Alla notiser',
+    'upcoming' => 'Kommande',
+    'past' => 'Tidigare',
+    'empty_upcoming' => 'Inga kommande notiser.',
+    'empty_past' => 'Inga tidigare notiser.',
+    'new' => 'Ny notis',
+    'new_for' => 'Ny notis för :day',
+    'edit' => 'Ändra notis',
+    'date' => 'Datum',
+    'body' => 'Text',
+    'time' => 'Tid',
+    'time_hint' => 'Valfri',
+    'private' => 'Bara jag',
+    'private_badge' => 'Bara du ser den här',
+    'save' => 'Spara',
+    'delete' => 'Ta bort',
+    'cancel' => 'Avbryt',
+    'confirm_delete' => 'Ta bort den här notisen?',
+    'created' => 'Notisen är sparad.',
+    'updated' => 'Notisen är ändrad.',
+    'deleted' => 'Notisen är borttagen.',
+];

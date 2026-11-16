@@ -8,6 +8,7 @@
     'triggerLabel' => null,
 ])
 
+{{-- On opening, the field marked data-autofocus gets focus, else the first field. --}}
 <div
     x-data="{ open: @js((bool) $open) }"
     @if (filled($name)) x-on:open-sheet.window="$event.detail === @js($name) && (open = true)" @endif
@@ -40,7 +41,7 @@
             aria-label="{{ $title }}"
             class="max-h-[85vh] w-full overflow-y-auto rounded-t-sheet bg-canvas px-4 pt-2 pb-5 text-ink sm:max-w-md sm:rounded-sheet sm:pt-4"
             x-on:click.stop
-            x-init="$watch('open', (value) => value && $nextTick(() => $el.querySelector('input:not([type=hidden]), textarea')?.focus()))"
+            x-init="$watch('open', (value) => value && $nextTick(() => ($el.querySelector('[data-autofocus]') ?? $el.querySelector('input:not([type=hidden]), textarea'))?.focus()))"
         >
             <span aria-hidden="true" class="mx-auto mb-2 block h-1.5 w-10 rounded-full bg-line sm:hidden"></span>
 

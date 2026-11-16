@@ -1,52 +1,78 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="grid grid-cols-1 items-start gap-8 md:grid-cols-2">
-        <h1 class="text-2xl font-semibold tracking-tight">{{ __('meals.meals') }}</h1>
+    <div class="space-y-4">
+        @error('meal')
+            <x-ui.message type="error">{{ $message }}</x-ui.message>
+        @enderror
 
-        <div>
-            @can('create', App\Models\Meal::class)
-            <p class="mb-3 text-base text-muted">{{ __('meals.prompt') }}</p>
+        <x-ui.segmented
+            :label="__('meals.meals')"
+            :options="collect(App\Enums\MealStatus::tabs())->map(fn ($tab) => [
+                'label' => $tab->tabLabel(),
+                'href' => route('meals.index', ['status' => $tab->value]),
+                'selected' => $tab === $status,
+            ])->all()"
+        />
 
-            <form method="POST" action="{{ route('meals.store') }}" class="meals-form space-y-3 rounded-3xl p-5">
-                @csrf
-
-                <label class="block text-sm font-medium" for="name">{{ __('meals.name') }}</label>
-                <textarea id="name" name="name" rows="3" required maxlength="255" class="w-full rounded-2xl bg-field px-3 py-2 text-sm text-ink">{{ old('name') }}</textarea>
-
-                @error('name')
-                    <p class="rounded-2xl bg-danger-soft px-3 py-2 text-sm text-danger">{{ $message }}</p>
-                @enderror
-
-                <label class="block text-sm font-medium" for="recipe-link">{{ __('meals.recipe_link') }}</label>
-                <input id="recipe-link" name="recipe_link" type="url" value="{{ old('recipe_link') }}" maxlength="2048" class="w-full rounded-2xl bg-field px-3 py-2 text-sm text-ink">
-
-                @error('recipe_link')
-                    <p class="rounded-2xl bg-danger-soft px-3 py-2 text-sm text-danger">{{ $message }}</p>
-                @enderror
-
-                <label class="block text-sm font-medium" for="comment">{{ __('meals.comment') }}</label>
-                <textarea id="comment" name="comment" rows="4" maxlength="10000" class="w-full rounded-2xl bg-field px-3 py-2 text-sm text-ink">{{ old('comment') }}</textarea>
-
-                @error('comment')
-                    <p class="rounded-2xl bg-danger-soft px-3 py-2 text-sm text-danger">{{ $message }}</p>
-                @enderror
-
-                <div class="flex justify-end">
-                    <button type="submit" class="rounded-full bg-[var(--color-f-5)] px-4 py-2 text-sm font-medium text-[var(--color-f-1)] hover:opacity-90">{{ __('meals.save') }}</button>
-                </div>
-            </form>
+        @if ($status === App\Enums\MealStatus::Shortlist)
+            @can('plan', App\Models\Meal::class)
+                <x-meals.plan-sheets />
             @endcan
+        @endif
 
-            @if ($meals->isEmpty())
-                <p class="meals-card mt-8 rounded-3xl p-3 text-sm text-ink">{{ __('meals.empty') }}</p>
-            @else
-                <div class="mt-8 space-y-4">
-                    @foreach ($meals as $meal)
-                        <x-meal :meal="$meal" />
-                    @endforeach
-                </div>
-            @endif
-        </div>
+        @if ($status === App\Enums\MealStatus::Wishlist)
+            @can('create', App\Models\Meal::class)
+                <x-ui.quick-add
+                    :label="__('meals.new_wish')"
+                    :placeholder="__('meals.prompt')"
+                    name="name"
+                    :action="route('meals.store')"
+                    :value="old('name')"
+                    required
+                    maxlength="255"
+                    expandable
+                    :more-label="__('meals.more')"
+                    :expanded="$errors->hasAny(['recipe_link', 'comment']) || filled(old('recipe_link')) || filled(old('comment'))"
+                >
+                    <x-ui.field :label="__('meals.recipe_link')" name="recipe_link" type="url" :value="old('recipe_link')" maxlength="2048" placeholder="https://" />
+                    <x-ui.field :label="__('meals.comment')" name="comment" multiline maxlength="10000">{{ old('comment') }}</x-ui.field>
+                </x-ui.quick-add>
+            @endcan
+        @endif
+
+        @if ($status === App\Enums\MealStatus::Planned)
+            @include('meals.planner')
+        @elseif ($meals->isEmpty())
+            <p class="rounded-card border border-surface-line bg-surface px-4 py-3 text-[15px] text-muted">{{ $status->emptyMessage() }}</p>
+        @else
+            <x-ui.group>
+                @foreach ($meals as $meal)
+                    <x-meal :meal="$meal">
+                        @if (auth()->user()->can('move', $meal) || ($meal->status === App\Enums\MealStatus::Shortlist && auth()->user()->can('plan', $meal)))
+                            <x-slot:actions>
+                                @if ($meal->status === App\Enums\MealStatus::Shortlist && auth()->user()->can('plan', $meal))
+                                    <x-meals.pick-day-button :meal="$meal" variant="primary">{{ __('meals.plan') }}</x-meals.pick-day-button>
+                                @endif
+
+                                @can('move', $meal)
+                                    @foreach ($meal->status->moveTargets() as $target)
+                                        <form method="POST" action="{{ route('meals.status', $meal) }}">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="{{ $target->value }}">
+                                            <x-ui.button
+                                                type="submit"
+                                                :variant="$target === App\Enums\MealStatus::Shortlist ? 'primary' : ($target === App\Enums\MealStatus::Discarded ? 'danger' : 'tonal')"
+                                            >{{ $meal->status->moveLabel($target) }}</x-ui.button>
+                                        </form>
+                                    @endforeach
+                                @endcan
+                            </x-slot:actions>
+                        @endif
+                    </x-meal>
+                @endforeach
+            </x-ui.group>
+        @endif
     </div>
 @endsection

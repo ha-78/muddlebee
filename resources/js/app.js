@@ -1,4 +1,6 @@
 import Alpine from 'alpinejs';
+import sort from '@alpinejs/sort';
+import { mealPlanner } from './meal-planner.js';
 import { formatPostedTimes } from './posted-at.js';
 import { applyTheme, readThemePreference } from './theme.js';
 
@@ -22,6 +24,8 @@ function persistDeviceTheme(theme) {
 }
 
 document.addEventListener('alpine:init', () => {
+    Alpine.data('mealPlanner', mealPlanner);
+
     Alpine.data('liveRegion', () => ({
         archived: false,
         loading: false,
@@ -237,4 +241,5 @@ document.addEventListener('alpine:init', () => {
 });
 
 formatPostedTimes();
+Alpine.plugin(sort);
 Alpine.start();

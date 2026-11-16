@@ -10,6 +10,7 @@ use App\Http\Controllers\InviteController;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\ListItemController;
 use App\Http\Controllers\MealsController;
+use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\UserController;
@@ -49,6 +50,15 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/meals', [MealsController::class, 'index'])->name('meals.index');
     Route::post('/meals', [MealsController::class, 'store'])->name('meals.store');
+    Route::patch('/meals/{meal}/status', [MealsController::class, 'updateStatus'])->name('meals.status');
+    Route::put('/meals/{meal}/plan', [MealsController::class, 'plan'])->name('meals.plan');
+    Route::delete('/meals/{meal}/plan', [MealsController::class, 'unplan'])->name('meals.unplan');
+    Route::post('/meals/{meal}/again', [MealsController::class, 'again'])->name('meals.again');
+
+    Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
+    Route::post('/notices', [NoticeController::class, 'store'])->name('notices.store');
+    Route::patch('/notices/{notice}', [NoticeController::class, 'update'])->name('notices.update');
+    Route::delete('/notices/{notice}', [NoticeController::class, 'destroy'])->name('notices.destroy');
 
     Route::get('/threads', [ThreadController::class, 'index'])->name('threads.index');
     Route::get('/threads/version', [ThreadController::class, 'version'])->name('threads.version');

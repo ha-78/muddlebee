@@ -36,7 +36,7 @@ enum Section: string
         return match ($this) {
             self::Start => ['home'],
             self::Threads => ['threads.*', 'replies.*'],
-            self::Calendar => [],
+            self::Calendar => ['notices.*'],
             self::Lists => ['lists.*'],
             self::Bookmarks => ['bookmarks.*'],
             self::Meals => ['meals.*'],
@@ -61,7 +61,7 @@ enum Section: string
             self::Bookmarks => 'bookmarks.index',
             self::Meals => 'meals.index',
             self::Personal => 'account',
-            default => null,
+            self::Calendar => 'notices.index',
         };
     }
 
@@ -81,7 +81,7 @@ enum Section: string
             self::Bookmarks => __('bookmarks.bookmarks'),
             self::Meals => __('meals.meals'),
             self::Personal => __('users.account'),
-            default => '',
+            self::Calendar => __('welcome.calendar_title'),
         };
     }
 

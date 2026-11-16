@@ -326,14 +326,6 @@ html[data-theme='dark'] .account-table tbody tr {
     background-color: var(--color-g-3);
 }
 
-.home-threads > p {
-    background-color: var(--color-a-2);
-}
-
-html[data-theme='dark'] .home-threads > p {
-    background-color: var(--color-a-4);
-}
-
 html[data-theme='dark'] :is(input, textarea, select):not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']) {
     color: var(--color-d-5);
 }

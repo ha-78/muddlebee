@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'notices' => 'Notifications',
+    'all' => 'All notifications',
+    'upcoming' => 'Upcoming',
+    'past' => 'Earlier',
+    'empty_upcoming' => 'No upcoming notifications.',
+    'empty_past' => 'No earlier notifications.',
+    'new' => 'New notification',
+    'new_for' => 'New notification for :day',
+    'edit' => 'Edit notification',
+    'date' => 'Date',
+    'body' => 'Text',
+    'time' => 'Time',
+    'time_hint' => 'Optional',
+    'private' => 'Only me',
+    'private_badge' => 'Only you can see this',
+    'save' => 'Save',
+    'delete' => 'Delete',
+    'cancel' => 'Cancel',
+    'confirm_delete' => 'Delete this notification?',
+    'created' => 'The notification is saved.',
+    'updated' => 'The notification is updated.',
+    'deleted' => 'The notification is deleted.',
+];

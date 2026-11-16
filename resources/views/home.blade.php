@@ -1,45 +1,52 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="mb-8">
-        <p class="text-sm font-medium text-muted">{{ __('home.welcome') }}</p>
-        <h1 class="mt-1 text-2xl font-semibold tracking-tight">{{ $user->name }}</h1>
-    </div>
+    <x-notice-sheets :default-date="$today->datetime" />
 
-    <div class="lg:grid lg:grid-cols-3 lg:items-start lg:gap-8">
-        <div class="mb-8 min-w-0 lg:col-span-2 lg:mb-0">
+    <div class="space-y-6 lg:grid lg:grid-cols-3 lg:items-start lg:gap-6 lg:space-y-0">
+        <div class="min-w-0 space-y-2 lg:col-span-2">
             <x-calendar :today="$today" :tomorrow="$tomorrow" :days="$days" />
+
+            <div class="flex justify-end px-1">
+                <a href="{{ route('notices.index') }}" class="inline-flex items-center gap-0.5 text-[13px] font-medium text-muted">
+                    {{ __('notices.all') }}
+                    <x-icon name="chevron-right" size="4" stroke="2" />
+                </a>
+            </div>
         </div>
 
-        <div class="min-w-0">
+        {{-- Threads keep their own green here. --}}
+        <section data-color="{{ \App\Enums\Section::Threads->color() }}" class="min-w-0 space-y-3">
+            <div class="flex items-baseline justify-between gap-3 px-1">
+                <h2 class="text-[13px] font-semibold uppercase tracking-wide text-muted">{{ __('threads.threads') }}</h2>
+                <a href="{{ route('threads.index') }}" class="inline-flex items-center gap-0.5 text-[13px] font-medium text-muted">
+                    {{ __('threads.show_threads') }}
+                    <x-icon name="chevron-right" size="4" stroke="2" />
+                </a>
+            </div>
+
             @can('create', App\Models\Thread::class)
-            <form method="POST" action="{{ route('threads.store') }}" class="threads-form space-y-3 rounded-3xl p-5">
-                @csrf
-                <input type="hidden" name="return_to" value="home">
-
-                <label class="block text-sm font-medium" for="body">{{ __('threads.new') }}</label>
-                <textarea id="body" name="body" rows="4" required maxlength="10000" class="w-full rounded-2xl bg-field px-3 py-2 text-sm text-ink">{{ old('body') }}</textarea>
-
-                @error('body')
-                    <p class="rounded-2xl bg-danger-soft px-3 py-2 text-sm text-danger">{{ $message }}</p>
-                @enderror
-
-                <div class="flex justify-end">
-                    <button type="submit" class="rounded-full bg-[var(--color-a-5)] px-4 py-2 text-sm font-medium text-[var(--color-a-1)] hover:opacity-90">{{ __('threads.publish') }}</button>
-                </div>
-            </form>
+                <x-ui.quick-add
+                    :label="__('threads.new_thread')"
+                    :placeholder="__('threads.new')"
+                    name="body"
+                    :action="route('threads.store')"
+                    :value="old('body')"
+                    multiline
+                    required
+                    maxlength="10000"
+                >
+                    <x-slot:hidden>
+                        <input type="hidden" name="return_to" value="home">
+                    </x-slot:hidden>
+                </x-ui.quick-add>
             @endcan
 
-            <section class="mt-8" x-data="liveRegion" data-fragment="thread-list" data-version="{{ $version }}" data-version-url="{{ route('threads.version') }}">
-                <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-                    <h2 class="text-lg font-medium">{{ $listHeading }}</h2>
-                    <a href="{{ route('threads.index') }}" class="text-sm text-ink hover:underline">{{ __('threads.show_threads') }}</a>
-                </div>
-
+            <div x-data="liveRegion" data-fragment="thread-list" data-version="{{ $version }}" data-version-url="{{ route('threads.version') }}">
                 <div x-ref="region" class="home-threads">
                     <x-thread-list :threads="$threads" :empty-message="$emptyMessage" />
                 </div>
-            </section>
-        </div>
+            </div>
+        </section>
     </div>
 @endsection

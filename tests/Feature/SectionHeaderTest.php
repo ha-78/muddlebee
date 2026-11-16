@@ -109,8 +109,9 @@ it('marks the current section icon and leaves the others in their own color', fu
         ->assertSee('aria-current="page"', false)
         ->getContent();
 
+    // "a" also colors the threads column on the start page.
     expect(substr_count($home, 'data-color="d"'))->toBe(1)
-        ->and(substr_count($home, 'data-color="a"'))->toBe(2)
+        ->and(substr_count($home, 'data-color="a"'))->toBe(3)
         ->and(substr_count($home, 'data-color="c"'))->toBe(2)
         ->and(substr_count($home, 'data-color="e"'))->toBe(2)
         ->and(substr_count($home, 'data-color="f"'))->toBe(2)

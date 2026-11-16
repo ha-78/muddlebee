@@ -56,4 +56,6 @@ it('maps route names onto their section', function (string $name, Section $secti
     'invites' => ['invites.store', Section::Personal],
     'context' => ['contexts.update', Section::Personal],
     'theme' => ['device.theme', Section::Start],
+    'notices' => ['notices.index', Section::Calendar],
+    'notice changes' => ['notices.update', Section::Calendar],
 ]);

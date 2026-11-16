@@ -606,7 +606,7 @@ it('hides thread forms from a member without those grants', function () {
     $this->actingAs($member)
         ->get(route('home'))
         ->assertSuccessful()
-        ->assertDontSee('threads-form', false);
+        ->assertDontSee('action="'.route('threads.store').'"', false);
 
     $this->actingAs($member)
         ->get(route('threads.index'))
@@ -646,7 +646,7 @@ it('keeps starting a thread and replying as separate grants', function () {
 
     $this->actingAs($replier)
         ->get(route('home'))
-        ->assertDontSee('threads-form', false);
+        ->assertDontSee('action="'.route('threads.store').'"', false);
 
     $this->actingAs($replier)
         ->get(route('threads.show', $thread))

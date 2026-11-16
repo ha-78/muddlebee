@@ -9,16 +9,15 @@ it('shows the signed-in user on the home page', function () {
     $this->actingAs($user)
         ->get(route('home'))
         ->assertSuccessful()
-        ->assertSee('Välkommen')
-        ->assertSee('Hanna Anderberg')
+        ->assertDontSee(__('home.welcome').',')
         ->assertSee(route('account'), false)
         ->assertSee(__('users.account'), false)
         ->assertDontSee(__('users.log_out'))
         ->assertDontSee(__('themes.label'))
-        ->assertSee('threads-form', false)
-        ->assertSee('bg-[var(--color-a-5)]', false)
-        ->assertSee('text-[var(--color-a-1)]', false)
-        ->assertDontSee('bg-form', false);
+        ->assertSee(__('threads.new_thread'))
+        ->assertSee('name="return_to" value="home"', false)
+        ->assertSee('href="'.route('threads.index').'"', false)
+        ->assertDontSee('var(--color-', false);
 });
 
 it('asks guests to log in before home', function () {
@@ -48,9 +47,25 @@ it('shows today, tomorrow, and the eight days after', function () {
             $tomorrow->isoFormat('D'),
             $tomorrow->isoFormat('MMMM'),
             ...$upcoming->flatMap(fn ($date) => $date->toDateString() === $later->toDateString()
-                ? [$date->toDateString(), $date->isoFormat('dddd'), $date->isoFormat('D'), $date->isoFormat('MMMM')]
+                ? [$date->toDateString(), $date->isoFormat('D'), $date->isoFormat('dddd'), $date->isoFormat('MMMM')]
                 : [$date->toDateString()])->all(),
         ])
-        ->assertSee('bg-calendar', false)
-        ->assertSee('text-calendar-ink', false);
+        ->assertSee('data-color="b"', false)
+        ->assertSee(__('calendar.no_notices'))
+        ->assertDontSee(__('calendar.plan_meal'));
+});
+
+it('offers meal planning from each day to those who may plan', function () {
+    $this->travelTo('2026-10-27 15:00:00');
+    $planner = User::factory()->withFeatures(Feature::PlanMeals)->create();
+
+    $response = $this->actingAs($planner)
+        ->get(route('home'))
+        ->assertSuccessful()
+        ->assertSee(__('calendar.plan_meal'))
+        ->assertSee(__('calendar.plan_short'))
+        ->assertSee('href="'.e(route('meals.index', ['status' => 'planned', 'date' => '2026-10-27'])).'"', false)
+        ->assertSee('href="'.e(route('meals.index', ['status' => 'planned', 'date' => '2026-11-05'])).'"', false);
+
+    expect(substr_count($response->getContent(), 'status=planned&amp;date='))->toBe(10);
 });

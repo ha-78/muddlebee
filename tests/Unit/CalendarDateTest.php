@@ -33,14 +33,12 @@ it('formats a calendar day in the configured locale', function () {
     }
 });
 
-it('builds today, tomorrow, and the eight days after', function () {
-    $this->travelTo('2026-10-27 15:00:00');
+it('keeps the day the same in the app time zone', function () {
+    $this->travelTo('2026-10-27 23:30:00');
 
-    $calendar = CalendarDate::forHome();
+    $date = CalendarDate::from(now()->utc(), 5);
 
-    expect($calendar['today']->datetime)->toBe('2026-10-27')
-        ->and($calendar['tomorrow']->datetime)->toBe('2026-10-28')
-        ->and($calendar['days'])->toHaveCount(8)
-        ->and($calendar['days']->first()->datetime)->toBe('2026-10-29')
-        ->and($calendar['days']->last()->datetime)->toBe('2026-11-05');
+    expect($date->datetime)->toBe(now()->timezone(config('app.timezone'))->toDateString())
+        ->and($date->context_id)->toBe(5)
+        ->and($date->exists)->toBeFalse();
 });

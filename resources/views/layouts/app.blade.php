@@ -17,7 +17,7 @@
     </head>
     <body class="min-h-screen bg-canvas text-ink antialiased">
         <x-site-header>
-            @if ($section->routeName() && ! $section->isMainPage())
+            @if ($__env->hasSection('back') || ($section->routeName() && ! $section->isMainPage()))
                 <x-slot:leading>
                     <x-section-back :section="$section" :href="trim($__env->yieldContent('back'))" />
                 </x-slot:leading>
