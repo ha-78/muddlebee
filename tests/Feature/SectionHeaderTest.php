@@ -21,7 +21,7 @@ it('paints the header from the current section', function (string $routeName, st
         ->assertSee('m2.25 12 8.954-8.955', false)
         ->assertSee('h-14 bg-bar', false)
         ->assertSee('text-[11px]', false)
-        ->assertDontSee(__('layout.brand'), false)
+        ->assertDontSee('>'.__('layout.brand').'</a>', false)
         ->assertDontSee('M15.75 19.5 8.25 12l7.5-7.5', false);
 })->with([
     'start' => ['home', 'd'],
@@ -121,7 +121,7 @@ it('marks the current section icon and leaves the others in their own color', fu
 it('puts a start-colored home icon on the welcome header', function () {
     $guest = $this->get('/')
         ->assertSuccessful()
-        ->assertDontSee(__('layout.brand'), false)
+        ->assertDontSee('>'.__('layout.brand').'</a>', false)
         ->assertSee('href="'.route('home').'"', false)
         ->assertSee('bg-tonal', false)
         ->assertSee('m2.25 12 8.954-8.955', false)
@@ -137,7 +137,7 @@ it('puts a start-colored home icon on the welcome header', function () {
     $this->actingAs(User::factory()->create())
         ->get('/')
         ->assertSuccessful()
-        ->assertDontSee(__('layout.brand'), false)
+        ->assertDontSee('>'.__('layout.brand').'</a>', false)
         ->assertSee('href="'.route('home').'"', false)
         ->assertSee('bg-tonal', false)
         ->assertSee('aria-label="'.__('home.title').'"', false)

@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'intro' => 'FNOF är en gemensam plats för ett hushåll. Varje del har sin egen färg, så det räcker med en blick för att se var du är.',
+    'intro' => 'Muddlebee är en gemensam plats för ett hushåll. Varje del har sin egen färg, så det räcker med en blick för att se var du är.',
     'home_body' => 'Startsidan är där hushållet landar. Kalendern ligger bredvid de senaste trådarna. En medlem som får skapa trådar kan skriva ett nytt meddelande utan att lämna sidan. Öppna trådar ligger kvar här tills någon arkiverar dem.',
     'calendar_title' => 'Kalender',
     'calendar_body' => 'Kalendern visar idag och imorgon först, sedan dagarna strax därefter. Den har en egen färg så att datumen skiljer sig från resten av sidan. Varje dag har sina notiser: en kort text med en valfri tid, delad med hushållet eller bara för dig. En medlem som får lägga till notiser använder plustecknet på en dag, och kan ändra eller ta bort sina egna genom att trycka på dem. Dagens planerade måltider syns längst ner i rutan. Under länken Alla notiser finns alla kommande notiser dag för dag, en knapp för att lägga till en notis längre fram, och de tidigare notiserna.',

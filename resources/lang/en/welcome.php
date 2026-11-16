@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'intro' => 'FNOF is a shared place for one household. Each part has its own color, so a glance is enough to see where you are.',
+    'intro' => 'Muddlebee is a shared place for one household. Each part has its own color, so a glance is enough to see where you are.',
     'home_body' => 'The start page is where the household lands. The calendar sits beside the latest threads. A member who may start threads can write a new message without leaving the page. Open threads stay here until someone archives them.',
     'calendar_title' => 'Calendar',
     'calendar_body' => 'The calendar shows today and tomorrow first, then the days just ahead. It has its own color so the dates stand apart from the rest of the page. Each day holds its notifications: a short text with an optional time, shared with the household or kept for yourself. A member who may add notifications uses the plus on a day, and can edit or remove their own by tapping them. The day's planned meals show at the bottom of its box. The All notifications link leads to every upcoming notification day by day, a button for adding one further ahead, and the earlier ones.',

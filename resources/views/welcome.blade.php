@@ -14,6 +14,7 @@
 @section('content')
     <div class="mx-auto max-w-3xl space-y-8">
         <div class="space-y-3 text-center">
+            <x-logo size="lg" class="mb-2" role="img" :aria-label="__('layout.brand')" />
             <h1 class="text-2xl font-semibold tracking-tight">{{ __('home.welcome') }}</h1>
             <p class="mx-auto max-w-xl text-[15px] leading-6 text-muted">{{ __('welcome.intro') }}</p>
 

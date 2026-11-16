@@ -9,7 +9,7 @@
         @endisset
 
         @if ($href)
-            <a href="{{ $href }}" class="min-w-0 truncate px-2 text-xl font-semibold">{{ __('layout.brand') }}</a>
+            <a href="{{ $href }}" class="min-w-0 px-1" aria-label="{{ __('layout.brand') }}"><x-logo /></a>
         @elseif (isset($title))
             <h1 class="min-w-0 flex-1 truncate px-2 text-xl font-semibold">{{ $title }}</h1>
             <div class="shrink-0">{{ $slot }}</div>

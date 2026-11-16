@@ -104,6 +104,14 @@
     --s-5: var(--color-g-5);
 }
 
+/* The Muddlebee logo keeps its own browns in every section and theme. */
+:root {
+    --logo-line: var(--color-d-5);
+    --logo-light: var(--color-d-2);
+    --logo-mid: var(--color-d-3);
+    --logo-wing: var(--color-white);
+}
+
 /* Roles are set on :root and [data-color] together. A var(--s-*) declared only
    on :root would resolve there and ignore a nested letter. */
 :root,
@@ -208,6 +216,11 @@ html[data-theme='dark'] :is(input, textarea, select):not([type='checkbox']):not(
     --color-field-error-ink: var(--field-error-ink);
     --color-bubble-mine: var(--bubble-mine);
     --color-bubble-mine-ink: var(--bubble-mine-ink);
+    --color-logo-line: var(--logo-line);
+    --color-logo-light: var(--logo-light);
+    --color-logo-mid: var(--logo-mid);
+    --color-logo-wing: var(--logo-wing);
+    --font-logo: 'Fredoka', ui-rounded, 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
     --color-field: var(--field);
 }
 

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+<!-- The Muddlebee bee. Hex colors here because a favicon can't read app.css: d-5 #50281a, d-2 #e8d0b6, d-3 #c89668. -->
+<g stroke="#50281a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">
+<ellipse cx="56" cy="34" rx="11" ry="16" transform="rotate(-18 56 34)" fill="#ffffff"/>
+<ellipse cx="70" cy="36" rx="10" ry="14" transform="rotate(22 70 36)" fill="#ffffff"/>
+<path d="M26.5 48 Q24 37 18 32" fill="none"/><circle cx="17" cy="31" r="3.4" fill="#50281a"/>
+<path d="M35.5 48 Q38 37 44 32" fill="none"/><circle cx="45" cy="31" r="3.4" fill="#50281a"/>
+<path d="M50 49 C 66 43, 86 51, 89 60 C 86 69, 66 77, 50 71 Z" fill="#e8d0b6"/>
+<circle cx="47" cy="60" r="12" fill="#c89668"/>
+<circle cx="31" cy="60" r="13.5" fill="#e8d0b6"/>
+</g>
+<circle cx="26" cy="58" r="3.1" fill="#50281a"/><circle cx="36" cy="58" r="3.1" fill="#50281a"/>
+<circle cx="25.1" cy="57" r="0.95" fill="#ffffff"/><circle cx="35.1" cy="57" r="0.95" fill="#ffffff"/>
+<path d="M27 64.5 Q31 68.5 35 64.5" fill="none" stroke="#50281a" stroke-width="2.6" stroke-linecap="round"/>
+</svg>

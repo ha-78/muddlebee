@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'brand' => 'FNOF - Familjens Notiscenter Och Forum',
+    'brand' => 'Muddlebee',
     'sections' => 'Sektioner',
     'close' => 'Stäng',
 ];

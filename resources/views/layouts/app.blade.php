@@ -12,16 +12,19 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
         <title>{{ config('app.name') }}</title>
+        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <x-theme-script />
     </head>
     <body class="min-h-screen bg-canvas text-ink antialiased">
         <x-site-header>
-            @if ($__env->hasSection('back') || ($section->routeName() && ! $section->isMainPage()))
-                <x-slot:leading>
+            <x-slot:leading>
+                @if ($__env->hasSection('back') || ($section->routeName() && ! $section->isMainPage()))
                     <x-section-back :section="$section" :href="trim($__env->yieldContent('back'))" />
-                </x-slot:leading>
-            @endif
+                @endif
+                {{-- The bee on every page, left of the section title. --}}
+                <x-logo-mark class="ml-1 size-8" />
+            </x-slot:leading>
             <x-slot:title>
                 @hasSection('title')
                     @yield('title')
