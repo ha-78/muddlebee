@@ -48,6 +48,10 @@ return [
     'drag' => 'Dra till en annan dag',
     'drag_hint' => 'Dra till en dag',
     'drop_failed' => 'Måltiden kunde inte flyttas. Försök igen.',
+    'edit' => 'Ändra',
+    'edit_meal' => 'Ändra måltid',
+    'updated' => 'Måltiden är ändrad.',
+    'cancel' => 'Avbryt',
     'tabs' => [
         'wishlist' => 'Önskelista',
         'shortlist' => 'Kortlista',

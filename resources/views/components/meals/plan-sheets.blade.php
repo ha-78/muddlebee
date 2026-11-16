@@ -60,8 +60,8 @@
             <x-ui.field :label="__('meals.date')" name="date" id="pick-day-date" type="date" x-model="meal.date" :min="today()->toDateString()" required :show-error="$failed !== null" data-autofocus />
 
             <div class="flex gap-2 pt-1">
-                <x-ui.button variant="tonal" class="flex-1" x-on:click="open = false">{{ __('notices.cancel') }}</x-ui.button>
-                <x-ui.button type="submit" class="flex-2">{{ __('notices.save') }}</x-ui.button>
+                <x-ui.button variant="tonal" class="flex-1" x-on:click="open = false">{{ __('meals.cancel') }}</x-ui.button>
+                <x-ui.button type="submit" class="flex-2">{{ __('meals.save') }}</x-ui.button>
             </div>
         </form>
     </x-ui.sheet>

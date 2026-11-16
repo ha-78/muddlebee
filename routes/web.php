@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/meals', [MealsController::class, 'index'])->name('meals.index');
     Route::post('/meals', [MealsController::class, 'store'])->name('meals.store');
+    Route::patch('/meals/{meal}', [MealsController::class, 'update'])->name('meals.update');
     Route::patch('/meals/{meal}/status', [MealsController::class, 'updateStatus'])->name('meals.status');
     Route::put('/meals/{meal}/plan', [MealsController::class, 'plan'])->name('meals.plan');
     Route::delete('/meals/{meal}/plan', [MealsController::class, 'unplan'])->name('meals.unplan');

@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\Feature;
+use App\Enums\Role;
 use App\Models\Meal;
 use App\Models\User;
 
@@ -34,6 +35,18 @@ class MealPolicy
     public function wishAgain(User $actor, Meal $meal): bool
     {
         return $this->create($actor) && (int) $meal->context_id === $actor->currentContextId();
+    }
+
+    /**
+     * Changing the name, recipe link or comment: the one who added it, or an admin.
+     */
+    public function update(User $actor, Meal $meal): bool
+    {
+        if (! $actor->canWrite() || (int) $meal->context_id !== $actor->currentContextId()) {
+            return false;
+        }
+
+        return (int) $meal->user_id === (int) $actor->getKey() || $actor->role->atLeast(Role::Admin);
     }
 
     /**

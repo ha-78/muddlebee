@@ -8,9 +8,13 @@
     'moreLabel' => null,
     'expanded' => false,
     'multiline' => false,
+    'showError' => true,
 ])
 
-{{-- One card: heading, the main field with its add button, and any extra fields below a divider. --}}
+@php($invalid = $showError && $errors->has($name))
+
+{{-- One card: heading, the main field with its add button, and any extra fields below a divider.
+     "showError" lets a page keep another form's error (with the same field name) out of this card. --}}
 <form
     @if ($action) action="{{ $action }}" method="POST" @endif
     aria-labelledby="{{ $name }}-heading"
@@ -54,12 +58,12 @@
                 name="{{ $name }}"
                 rows="1"
                 placeholder="{{ $placeholder ?? $label }}"
-                @error($name) aria-invalid="true" aria-describedby="{{ $name }}-error" @enderror
+                @if ($invalid) aria-invalid="true" aria-describedby="{{ $name }}-error" @endif
                 {{ $attributes->only(['required', 'maxlength']) }}
                 @class([
                     'field-sizing-content max-h-40 min-h-11 min-w-0 flex-1 resize-none rounded-field border-2 bg-field px-3 py-2 text-[15px] text-field-ink placeholder:text-field-ink/60',
-                    'border-field-error' => $errors->has($name),
-                    'border-transparent' => ! $errors->has($name),
+                    'border-field-error' => $invalid,
+                    'border-transparent' => ! $invalid,
                 ])
             >{{ $value }}</textarea>
         @else
@@ -68,12 +72,12 @@
                 name="{{ $name }}"
                 value="{{ $value }}"
                 placeholder="{{ $placeholder ?? $label }}"
-                @error($name) aria-invalid="true" aria-describedby="{{ $name }}-error" @enderror
+                @if ($invalid) aria-invalid="true" aria-describedby="{{ $name }}-error" @endif
                 {{ $attributes->only(['required', 'maxlength']) }}
                 @class([
                     'h-11 min-w-0 flex-1 rounded-field border-2 bg-field px-3 text-[15px] text-field-ink placeholder:text-field-ink/60',
-                    'border-field-error' => $errors->has($name),
-                    'border-transparent' => ! $errors->has($name),
+                    'border-field-error' => $invalid,
+                    'border-transparent' => ! $invalid,
                 ])
             >
         @endif
@@ -83,12 +87,12 @@
         </x-ui.button>
     </div>
 
-    @error($name)
+    @if ($invalid)
         <p id="{{ $name }}-error" class="mt-1.5 flex items-center gap-1.5 text-[13px] font-semibold text-field-error-ink">
             <x-icon name="exclamation-circle" size="4" stroke="2" class="shrink-0" />
-            {{ $message }}
+            {{ $errors->first($name) }}
         </p>
-    @enderror
+    @endif
 
     @if ($slot->isNotEmpty())
         <div

@@ -6,6 +6,7 @@ use App\Enums\MealStatus;
 use App\Http\Requests\PlanMealRequest;
 use App\Http\Requests\StoreMealRequest;
 use App\Http\Requests\UnplanMealRequest;
+use App\Http\Requests\UpdateMealRequest;
 use App\Http\Requests\UpdateMealStatusRequest;
 use App\Http\Requests\WishMealAgainRequest;
 use App\Models\Meal;
@@ -90,6 +91,20 @@ class MealsController extends Controller
         );
 
         return to_route('meals.index')->with('status', __('meals.created'));
+    }
+
+    public function update(UpdateMealRequest $request, Meal $meal, MealService $meals): RedirectResponse
+    {
+        $meals->update(
+            $request->user(),
+            $meal,
+            $request->validated('name'),
+            $request->validated('recipe_link'),
+            $request->validated('comment'),
+        );
+
+        return back(fallback: route('meals.index', ['status' => $meal->status->value]))
+            ->with('status', __('meals.updated'));
     }
 
     public function updateStatus(UpdateMealStatusRequest $request, Meal $meal, MealService $meals): RedirectResponse

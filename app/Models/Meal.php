@@ -72,4 +72,20 @@ class Meal extends Model
             'planned_at' => 'datetime',
         ];
     }
+
+    /**
+     * What the "Ändra måltid" sheet needs to edit this meal.
+     *
+     * @return array{id: int, action: string, name: string, recipe_link: string, comment: string}
+     */
+    public function toEditor(): array
+    {
+        return [
+            'id' => $this->getKey(),
+            'action' => route('meals.update', $this),
+            'name' => $this->name,
+            'recipe_link' => $this->recipe_link ?? '',
+            'comment' => $this->comment ?? '',
+        ];
+    }
 }

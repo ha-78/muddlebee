@@ -48,6 +48,10 @@ return [
     'drag' => 'Drag to another day',
     'drag_hint' => 'Drag to a day',
     'drop_failed' => 'The meal could not be moved. Try again.',
+    'edit' => 'Edit',
+    'edit_meal' => 'Edit meal',
+    'updated' => 'The meal is updated.',
+    'cancel' => 'Cancel',
     'tabs' => [
         'wishlist' => 'Wishlist',
         'shortlist' => 'Shortlist',

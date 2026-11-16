@@ -94,6 +94,24 @@ class MealService
     }
 
     /**
+     * Change a meal's name, recipe link and comment. Its status and day stay as they are.
+     */
+    public function update(User $actor, Meal $meal, string $name, ?string $recipeLink, ?string $comment): Meal
+    {
+        if (! $actor->can('update', $meal)) {
+            throw new AuthorizationException;
+        }
+
+        $meal->update([
+            'name' => $name,
+            'recipe_link' => $recipeLink,
+            'comment' => $comment,
+        ]);
+
+        return $meal;
+    }
+
+    /**
      * Put a shortlisted meal on a day, or move a planned meal to another day.
      * The old day is removed if it is left empty.
      */

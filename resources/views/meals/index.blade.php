@@ -15,6 +15,10 @@
             ])->all()"
         />
 
+        @if (auth()->user()->canWrite())
+            <x-meals.edit-sheet />
+        @endif
+
         @if ($status === App\Enums\MealStatus::Shortlist)
             @can('plan', App\Models\Meal::class)
                 <x-meals.plan-sheets />
@@ -28,15 +32,16 @@
                     :placeholder="__('meals.prompt')"
                     name="name"
                     :action="route('meals.store')"
-                    :value="old('name')"
+                    :value="old('form') === 'edit-meal' ? '' : old('name')"
+                    :show-error="old('form') !== 'edit-meal'"
                     required
                     maxlength="255"
                     expandable
                     :more-label="__('meals.more')"
-                    :expanded="$errors->hasAny(['recipe_link', 'comment']) || filled(old('recipe_link')) || filled(old('comment'))"
+                    :expanded="old('form') !== 'edit-meal' && ($errors->hasAny(['recipe_link', 'comment']) || filled(old('recipe_link')) || filled(old('comment')))"
                 >
-                    <x-ui.field :label="__('meals.recipe_link')" name="recipe_link" type="url" :value="old('recipe_link')" maxlength="2048" placeholder="https://" />
-                    <x-ui.field :label="__('meals.comment')" name="comment" multiline maxlength="10000">{{ old('comment') }}</x-ui.field>
+                    <x-ui.field :label="__('meals.recipe_link')" name="recipe_link" type="url" :value="old('form') === 'edit-meal' ? '' : old('recipe_link')" maxlength="2048" placeholder="https://" :show-error="old('form') !== 'edit-meal'" />
+                    <x-ui.field :label="__('meals.comment')" name="comment" multiline maxlength="10000" :show-error="old('form') !== 'edit-meal'">{{ old('form') === 'edit-meal' ? '' : old('comment') }}</x-ui.field>
                 </x-ui.quick-add>
             @endcan
         @endif
@@ -49,8 +54,12 @@
             <x-ui.group>
                 @foreach ($meals as $meal)
                     <x-meal :meal="$meal">
-                        @if (auth()->user()->can('move', $meal) || ($meal->status === App\Enums\MealStatus::Shortlist && auth()->user()->can('plan', $meal)))
+                        @if (auth()->user()->can('update', $meal) || auth()->user()->can('move', $meal) || ($meal->status === App\Enums\MealStatus::Shortlist && auth()->user()->can('plan', $meal)))
                             <x-slot:actions>
+                                @can('update', $meal)
+                                    <x-meals.edit-button :meal="$meal" />
+                                @endcan
+
                                 @if ($meal->status === App\Enums\MealStatus::Shortlist && auth()->user()->can('plan', $meal))
                                     <x-meals.pick-day-button :meal="$meal" variant="primary">{{ __('meals.plan') }}</x-meals.pick-day-button>
                                 @endif

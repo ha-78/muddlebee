@@ -69,12 +69,17 @@
                 @foreach ($earlier as $meal)
                     <x-meal :meal="$meal">
                         <x-slot:meta>{{ $meal->calendarDate->heading }}</x-slot:meta>
-                        @if ($canWish)
+                        @if ($canWish || auth()->user()->can('update', $meal))
                             <x-slot:actions>
-                                <form method="POST" action="{{ route('meals.again', $meal) }}">
-                                    @csrf
-                                    <x-ui.button type="submit" variant="tonal">{{ __('meals.wish_again') }}</x-ui.button>
-                                </form>
+                                @can('update', $meal)
+                                    <x-meals.edit-button :meal="$meal" />
+                                @endcan
+                                @if ($canWish)
+                                    <form method="POST" action="{{ route('meals.again', $meal) }}">
+                                        @csrf
+                                        <x-ui.button type="submit" variant="tonal">{{ __('meals.wish_again') }}</x-ui.button>
+                                    </form>
+                                @endif
                             </x-slot:actions>
                         @endif
                     </x-meal>
