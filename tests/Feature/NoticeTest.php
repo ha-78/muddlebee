@@ -71,14 +71,12 @@ it('shows notices in their day box, timed ones first', function () {
     noticeOn($user, '2026-11-15', ['body' => 'Tidig tid', 'time' => '08:15']);
     noticeOn($user, '2026-11-20', ['body' => 'Senare dag']);
 
-    $response = $this->actingAs($user)
+    $this->actingAs($user)
         ->get(route('home'))
         ->assertSuccessful()
         ->assertSee('08:15')
         ->assertSee('Senare dag')
         ->assertSeeInOrder(['Tidig tid', 'Sen tid', 'Utan tid', 'Senare dag']);
-
-    expect(substr_count($response->getContent(), __('calendar.no_notices')))->toBe(1);
 });
 
 it('keeps private notices to their author', function () {

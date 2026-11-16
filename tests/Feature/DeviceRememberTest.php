@@ -114,6 +114,7 @@ it('stores a theme only for the signed-in users device', function () {
 
     $this->actingAs($user)
         ->withCookie($cookieName, $device->id.'|'.$plainToken)
+        ->withCredentials()
         ->postJson(route('device.theme'), ['theme' => 'not-a-theme'])
         ->assertNoContent();
 
@@ -121,6 +122,7 @@ it('stores a theme only for the signed-in users device', function () {
 
     $this->actingAs($user)
         ->withCookie($cookieName, $otherDevice->id.'|wrong')
+        ->withCredentials()
         ->postJson(route('device.theme'), ['theme' => 'dark'])
         ->assertNoContent();
 

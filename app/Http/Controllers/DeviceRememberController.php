@@ -16,7 +16,8 @@ class DeviceRememberController extends Controller
 
         $device = $deviceRememberService->findDeviceFromCookie($request);
 
-        if ($device === null || $device->user_id !== $request->user()->id) {
+        // is() compares the keys loosely: user_id can come back from the database as a string.
+        if ($device === null || ! $device->user()->is($request->user())) {
             return response()->noContent();
         }
 

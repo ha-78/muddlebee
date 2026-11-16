@@ -8,7 +8,6 @@ return [
     'reply_placeholder' => 'Write a reply …',
     'show_threads' => 'Show threads',
     'new' => 'Write a message',
-    'publish' => 'Publish',
     'empty' => 'No threads yet.',
     'empty_archive' => 'The archive is empty.',
     'archive' => 'Archive',

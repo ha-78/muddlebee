@@ -1,7 +1,7 @@
 @props(['section' => null, 'color', 'icon' => null, 'title'])
 
 {{-- One part of the app on the welcome page, in that part's own colors. --}}
-<article data-color="{{ $color }}" {{ $attributes->class('welcome-card rounded-card border border-surface-line bg-surface p-4') }}>
+<article data-color="{{ $color }}" data-welcome-card {{ $attributes->class('rounded-card border border-surface-line bg-surface p-4') }}>
     <h2 class="flex items-center gap-3 text-[17px] font-semibold">
         <span class="grid size-9 shrink-0 place-items-center rounded-full bg-tonal text-tonal-ink">
             @if ($section)

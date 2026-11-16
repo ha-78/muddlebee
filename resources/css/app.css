@@ -24,7 +24,7 @@
     --color-c-3: #e6c85a;
     --color-c-4: #c4962a;
     --color-c-5: #6e5216;
-    --color-d-1: #f8f0e6;
+    --color-d-1: #fbf6f0;
     --color-d-2: #e8d0b6;
     --color-d-3: #c89668;
     --color-d-4: #935432;
@@ -134,8 +134,6 @@
     /* Speech bubbles: your own messages in step 2, others on the surface. */
     --bubble-mine: var(--s-2);
     --bubble-mine-ink: var(--color-d-5);
-    --header: var(--s-3, var(--color-d-3));
-    --section-mark: var(--s-5, var(--color-d-5));
 }
 
 html[data-theme='dark'],
@@ -164,170 +162,18 @@ html[data-theme='dark'] [data-color] {
     --field-error-ink: var(--s-2);
     --bubble-mine: var(--s-2);
     --bubble-mine-ink: var(--s-5);
-    --header: var(--s-4, var(--color-d-4));
-    --section-mark: var(--s-2, var(--color-d-2));
 }
 
 :root {
     color-scheme: light;
-    --badge: var(--color-c-4);
-    --notice: var(--color-b-2);
-    --panel: var(--color-c-2);
-    --form: var(--color-d-2);
-    --button: var(--color-b-3);
-    --button-ink: var(--color-d-5);
-    --chip: var(--color-c-3);
-    --pill: var(--color-c-2);
-    --pill-active: var(--color-c-5);
-    --status: var(--color-a-2);
-    --danger: var(--color-b-5);
-    --danger-soft: var(--color-b-2);
-    --reply: var(--color-c-1);
-    --aside: var(--color-a-2);
-    --row: var(--color-c-1);
-    --row-alt: var(--color-a-1);
-    --message-mine: var(--color-a-2);
-    --message-other: var(--color-d-2);
-    --calendar: var(--color-b-2);
-    --calendar-ink: var(--color-b-4);
 }
 
 html[data-theme='dark'] {
     color-scheme: dark;
-    --badge: var(--color-a-4);
-    --notice: var(--color-b-5);
-    --panel: var(--color-a-5);
-    --form: var(--color-a-4);
-    --button: var(--color-b-4);
-    --button-ink: var(--color-d-1);
-    --chip: var(--color-b-4);
-    --pill: var(--color-d-4);
-    --pill-active: var(--color-b-4);
-    --status: var(--color-a-4);
-    --danger: var(--color-d-1);
-    --danger-soft: var(--color-b-5);
-    --reply: var(--color-b-4);
-    --aside: var(--color-b-5);
-    --row: var(--color-d-4);
-    --row-alt: var(--color-a-5);
-    --message-mine: var(--color-a-4);
-    --message-other: var(--color-d-4);
-    --calendar: var(--color-b-4);
-    --calendar-ink: var(--color-b-2);
-}
-
-.data-table {
-    background-color: var(--color-d-2);
-}
-
-html[data-theme='dark'] .data-table {
-    background-color: var(--color-d-4);
-}
-
-.bookmarks-surface,
-.bookmarks-table thead tr {
-    background-color: var(--color-e-2);
-}
-
-.bookmarks-form {
-    border: 3px solid var(--color-e-2);
-}
-
-.bookmarks-table tbody tr {
-    background-color: var(--color-e-1);
-}
-
-html[data-theme='dark'] .bookmarks-surface,
-html[data-theme='dark'] .bookmarks-table thead tr {
-    background-color: var(--color-e-4);
-}
-
-html[data-theme='dark'] .bookmarks-form {
-    border-color: var(--color-e-4);
-}
-
-html[data-theme='dark'] .bookmarks-table tbody tr {
-    background-color: var(--color-e-3);
-}
-
-.lists-surface,
-.lists-table thead tr {
-    background-color: var(--color-c-2);
-}
-
-.lists-form {
-    border: 3px solid var(--color-c-2);
-}
-
-.lists-table tbody tr {
-    background-color: var(--color-c-1);
-}
-
-html[data-theme='dark'] .lists-surface,
-html[data-theme='dark'] .lists-table thead tr {
-    background-color: var(--color-c-4);
-}
-
-html[data-theme='dark'] .lists-form {
-    border-color: var(--color-c-4);
-}
-
-html[data-theme='dark'] .lists-table tbody tr {
-    background-color: var(--color-c-3);
-}
-
-.meals-form {
-    border: 3px solid var(--color-f-2);
-}
-
-.meals-card {
-    background-color: var(--color-f-2);
-}
-
-html[data-theme='dark'] .meals-form {
-    border-color: var(--color-f-4);
-}
-
-html[data-theme='dark'] .meals-card {
-    background-color: var(--color-f-4);
-}
-
-.threads-form {
-    border: 3px solid var(--color-a-2);
-}
-
-html[data-theme='dark'] .threads-form {
-    border-color: var(--color-a-4);
-}
-
-.account-surface,
-.account-table thead tr {
-    background-color: var(--color-g-2);
-}
-
-.account-form {
-    border: 3px solid var(--color-g-2);
-}
-
-.account-table tbody tr {
-    background-color: var(--color-g-1);
-}
-
-html[data-theme='dark'] .account-surface,
-html[data-theme='dark'] .account-table thead tr {
-    background-color: var(--color-g-4);
-}
-
-html[data-theme='dark'] .account-form {
-    border-color: var(--color-g-4);
-}
-
-html[data-theme='dark'] .account-table tbody tr {
-    background-color: var(--color-g-3);
 }
 
 html[data-theme='dark'] :is(input, textarea, select):not([type='checkbox']):not([type='radio']):not([type='button']):not([type='submit']):not([type='reset']) {
-    color: var(--color-d-5);
+    color: var(--field-ink);
 }
 
 @theme {
@@ -340,7 +186,6 @@ html[data-theme='dark'] :is(input, textarea, select):not([type='checkbox']):not(
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
     --color-canvas: var(--canvas);
-    --color-header: var(--header);
     --color-ink: var(--ink);
     --color-muted: var(--muted);
     --color-line: var(--line);
@@ -363,27 +208,7 @@ html[data-theme='dark'] :is(input, textarea, select):not([type='checkbox']):not(
     --color-field-error-ink: var(--field-error-ink);
     --color-bubble-mine: var(--bubble-mine);
     --color-bubble-mine-ink: var(--bubble-mine-ink);
-    --color-badge: var(--badge);
-    --color-notice: var(--notice);
-    --color-panel: var(--panel);
-    --color-form: var(--form);
     --color-field: var(--field);
-    --color-button: var(--button);
-    --color-button-ink: var(--button-ink);
-    --color-chip: var(--chip);
-    --color-pill: var(--pill);
-    --color-pill-active: var(--pill-active);
-    --color-status: var(--status);
-    --color-danger: var(--danger);
-    --color-danger-soft: var(--danger-soft);
-    --color-reply: var(--reply);
-    --color-aside: var(--aside);
-    --color-row: var(--row);
-    --color-row-alt: var(--row-alt);
-    --color-message-mine: var(--message-mine);
-    --color-message-other: var(--message-other);
-    --color-calendar: var(--calendar);
-    --color-calendar-ink: var(--calendar-ink);
 }
 
 @layer base {
@@ -427,10 +252,10 @@ html[data-theme='dark'] :is(input, textarea, select):not([type='checkbox']):not(
     }
 
     input[type='checkbox']:checked {
-        background-color: var(--button);
+        background-color: var(--primary);
     }
 
     input[type='checkbox']:checked::after {
-        border-color: var(--button-ink);
+        border-color: var(--primary-ink);
     }
 }

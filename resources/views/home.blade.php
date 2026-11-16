@@ -43,7 +43,7 @@
             @endcan
 
             <div x-data="liveRegion" data-fragment="thread-list" data-version="{{ $version }}" data-version-url="{{ route('threads.version') }}">
-                <div x-ref="region" class="home-threads">
+                <div x-ref="region" data-home-threads>
                     <x-thread-list :threads="$threads" :empty-message="$emptyMessage" />
                 </div>
             </div>

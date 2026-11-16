@@ -40,13 +40,13 @@ it('hides writing forms from a reader and refuses the posts', function () {
         ->get(route('home'))
         ->assertSuccessful()
         ->assertSee('En tråd')
-        ->assertDontSee('threads-form', false)
-        ->assertDontSee(__('threads.publish'));
+        ->assertDontSee('action="'.route('threads.store').'"', false)
+        ->assertDontSee(__('threads.new_thread'));
 
     $this->actingAs($reader)
         ->get(route('threads.index'))
         ->assertSuccessful()
-        ->assertDontSee('threads-form', false);
+        ->assertDontSee('action="'.route('threads.store').'"', false);
 
     $this->actingAs($reader)
         ->get(route('threads.show', $thread))
@@ -63,7 +63,7 @@ it('hides writing forms from a reader and refuses the posts', function () {
         ->get(route('bookmarks.index'))
         ->assertSuccessful()
         ->assertSee('Recept')
-        ->assertDontSee('bookmarks-form', false)
+        ->assertDontSee('action="'.route('bookmarks.store').'"', false)
         ->assertDontSee('action="'.route('bookmarks.destroy', $bookmark).'"', false);
 
     $this->actingAs($reader)
@@ -71,7 +71,7 @@ it('hides writing forms from a reader and refuses the posts', function () {
         ->assertSuccessful()
         ->assertSee('Kläder')
         ->assertSee('Skor')
-        ->assertDontSee('lists-form', false)
+        ->assertDontSee('action="'.route('lists.items.store').'"', false)
         ->assertDontSee('action="'.route('lists.items.destroy', $item).'"', false)
         ->assertDontSee('data-handle-url="'.route('lists.items.handle', $item).'"', false);
 
@@ -79,7 +79,7 @@ it('hides writing forms from a reader and refuses the posts', function () {
         ->get(route('meals.index'))
         ->assertSuccessful()
         ->assertSee('Pasta')
-        ->assertDontSee('meals-form', false)
+        ->assertDontSee('action="'.route('meals.store').'"', false)
         ->assertDontSee(__('meals.prompt'), false);
 
     $this->actingAs($reader)
@@ -158,6 +158,6 @@ it('shows the thread form to a member who may create threads', function () {
     $this->actingAs($member)
         ->get(route('home'))
         ->assertSuccessful()
-        ->assertSee('threads-form', false)
-        ->assertSee(__('threads.publish'));
+        ->assertSee('action="'.route('threads.store').'"', false)
+        ->assertSee(__('threads.new_thread'));
 });

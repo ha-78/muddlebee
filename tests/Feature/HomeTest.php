@@ -51,21 +51,15 @@ it('shows today, tomorrow, and the eight days after', function () {
                 : [$date->toDateString()])->all(),
         ])
         ->assertSee('data-color="b"', false)
-        ->assertSee(__('calendar.no_notices'))
-        ->assertDontSee(__('calendar.plan_meal'));
+        ->assertDontSee('status=planned&amp;date=', false);
 });
 
-it('offers meal planning from each day to those who may plan', function () {
+it('keeps meal planning off the start page boxes', function () {
     $this->travelTo('2026-10-27 15:00:00');
     $planner = User::factory()->withFeatures(Feature::PlanMeals)->create();
 
-    $response = $this->actingAs($planner)
+    $this->actingAs($planner)
         ->get(route('home'))
         ->assertSuccessful()
-        ->assertSee(__('calendar.plan_meal'))
-        ->assertSee(__('calendar.plan_short'))
-        ->assertSee('href="'.e(route('meals.index', ['status' => 'planned', 'date' => '2026-10-27'])).'"', false)
-        ->assertSee('href="'.e(route('meals.index', ['status' => 'planned', 'date' => '2026-11-05'])).'"', false);
-
-    expect(substr_count($response->getContent(), 'status=planned&amp;date='))->toBe(10);
+        ->assertDontSee('status=planned&amp;date=', false);
 });

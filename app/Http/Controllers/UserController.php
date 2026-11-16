@@ -29,7 +29,7 @@ class UserController extends Controller
                 ->where('expires_at', '>', now())
                 ->orderByDesc('last_used_at')
                 ->get(['id', 'device_name', 'last_used_at']),
-            'currentDeviceId' => $current !== null && $current->user_id === $user->id
+            'currentDeviceId' => $current !== null && (int) $current->user_id === (int) $user->getKey()
                 ? $current->id
                 : null,
         ]);

@@ -119,14 +119,20 @@ it('marks the current section icon and leaves the others in their own color', fu
 });
 
 it('puts a start-colored home icon on the welcome header', function () {
-    $this->get('/')
+    $guest = $this->get('/')
         ->assertSuccessful()
         ->assertDontSee(__('layout.brand'), false)
         ->assertSee('href="'.route('home').'"', false)
         ->assertSee('bg-tonal', false)
         ->assertSee('m2.25 12 8.954-8.955', false)
-        ->assertSee('href="'.route('login').'"', false)
-        ->assertDontSee('M20.25 8.511c.884.284', false);
+        ->assertSee('href="'.route('login').'"', false);
+
+    // Only the home icon in the header: no section icons (the welcome cards below have their own).
+    $header = str($guest->getContent())->after('<header')->before('</header>')->value();
+
+    expect($header)
+        ->toContain('m2.25 12 8.954-8.955')
+        ->not->toContain('M20.25 8.511c.884.284');
 
     $this->actingAs(User::factory()->create())
         ->get('/')

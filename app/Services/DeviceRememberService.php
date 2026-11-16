@@ -30,7 +30,7 @@ class DeviceRememberService
         $existing = $this->findDeviceFromCookie($request);
         $parsed = $this->parseCookieValue($request->cookie($this->cookieName()));
 
-        if ($existing !== null && $existing->user_id === $user->id && $parsed !== null) {
+        if ($existing !== null && (int) $existing->user_id === (int) $user->getKey() && $parsed !== null) {
             return $this->extend($existing, $request, $parsed['plain_token']);
         }
 
@@ -188,7 +188,7 @@ class DeviceRememberService
 
         $device = $this->findDeviceFromCookie($request);
 
-        if ($device === null || $device->user_id !== Auth::id()) {
+        if ($device === null || (int) $device->user_id !== (int) Auth::id()) {
             return null;
         }
 

@@ -13,7 +13,7 @@ it('does not offer public registration', function () {
     $this->get('/')
         ->assertSuccessful()
         ->assertSee('href="'.route('login').'"', false)
-        ->assertSee('welcome-card', false)
+        ->assertSee('data-welcome-card', false)
         ->assertSee(__('welcome.intro'))
         ->assertSee('M6.75 3v2.25M17.25 3v2.25', false)
         ->assertDontSee('var(--color-', false)
@@ -199,7 +199,7 @@ it('shows each person their account, and the user list only to an admin', functi
         ->assertSee(__('users.context'))
         ->assertSee(__('users.manage'))
         ->assertDontSee(__('users.log_out'))
-        ->assertSee(__('users.invites.heading'))
+        ->assertDontSee(__('users.invites.heading'))
         ->assertSee('href="'.route('users.show', $reader).'"', false)
         ->assertDontSee('var(--color-', false);
 

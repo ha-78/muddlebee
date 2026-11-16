@@ -29,7 +29,7 @@ it('starts a thread from a message without a name', function () {
         ->assertSee('En kort tråd')
         ->assertSee(__('threads.me'));
 
-    expect(str($home->getContent())->between('home-threads', '</section>')->value())
+    expect(str($home->getContent())->between('data-home-threads', '</section>')->value())
         ->not->toContain($user->name);
 });
 
@@ -222,14 +222,14 @@ it('serves a live thread list without the rest of the page', function () {
         ->assertSuccessful()
         ->assertSeeInOrder(['Äldre tråd', 'Nyare tråd'])
         ->assertDontSee('Arkiverad tråd')
-        ->assertDontSee(__('threads.publish'));
+        ->assertDontSee('action="'.route('threads.store').'"', false);
 
     $this->actingAs($reader)
         ->get(route('threads.index', ['archived' => 1]), ['X-Fragment' => 'thread-list'])
         ->assertSuccessful()
         ->assertSee('Arkiverad tråd')
         ->assertDontSee('Nyare tråd')
-        ->assertDontSee(__('threads.publish'));
+        ->assertDontSee('action="'.route('threads.store').'"', false);
 });
 
 it('serves live replies without the rest of the thread page', function () {
@@ -340,7 +340,7 @@ it('shows the current user as Me on their thread and replies', function () {
         ->assertSee(__('threads.me'))
         ->assertSee('Nils');
 
-    expect(str($home->getContent())->between('home-threads', '</section>')->value())
+    expect(str($home->getContent())->between('data-home-threads', '</section>')->value())
         ->not->toContain('Hanna');
 
     $this->actingAs($other)

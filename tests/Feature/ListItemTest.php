@@ -501,6 +501,10 @@ it('refuses to put back an item the user cannot see or edit', function () {
         'handled_by' => $owner->id,
     ]);
 
+    // Guests first: actingAs() stays in effect for the rest of the test.
+    $this->patch(route('lists.items.unhandle', $item))
+        ->assertRedirect(route('login'));
+
     $this->actingAs($member)
         ->patch(route('lists.items.unhandle', $item))
         ->assertForbidden();
@@ -508,9 +512,6 @@ it('refuses to put back an item the user cannot see or edit', function () {
     $this->actingAs($reader)
         ->patch(route('lists.items.unhandle', $item))
         ->assertForbidden();
-
-    $this->patch(route('lists.items.unhandle', $item))
-        ->assertRedirect(route('login'));
 
     expect($item->fresh()->handled_at)->not->toBeNull();
 });
