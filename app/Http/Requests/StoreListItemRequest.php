@@ -11,8 +11,7 @@ class StoreListItemRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('create', ListItem::class)
-            && (! $this->boolean('item_is_public') || $this->user()->can('publish', ListItem::class));
+        return $this->user()->can('create', ListItem::class);
     }
 
     protected function prepareForValidation(): void
@@ -24,7 +23,7 @@ class StoreListItemRequest extends FormRequest
             'item_name' => trim((string) $this->input('item_name')),
             'item_description' => $description === '' ? null : $description,
             'item_estimate' => $estimate === null || $estimate === '' ? null : $estimate,
-            'item_is_public' => $this->boolean('item_is_public'),
+            'item_private' => $this->boolean('item_private'),
         ]);
     }
 
@@ -38,7 +37,7 @@ class StoreListItemRequest extends FormRequest
             'item_name' => ['required', 'string', 'max:255'],
             'item_description' => ['nullable', 'string', 'max:10000'],
             'item_estimate' => ['nullable', 'integer'],
-            'item_is_public' => ['boolean'],
+            'item_private' => ['boolean'],
         ];
     }
 
@@ -77,10 +76,11 @@ class StoreListItemRequest extends FormRequest
                     return;
                 }
 
-                $listIsPublic = (bool) ItemList::query()->whereKey($this->integer('list_id'))->value('is_public');
+                // Your own lists are always open to you; someone else's shared list needs AddItemsToSharedLists.
+                $list = ItemList::query()->find($this->integer('list_id'));
 
-                if ($this->boolean('item_is_public') && ! $listIsPublic) {
-                    $validator->errors()->add('item_is_public', __('lists.private_list_item'));
+                if ($list !== null && ! $this->user()->can('create', [ListItem::class, $list])) {
+                    $validator->errors()->add('list_id', __('lists.shared_list_needs_permission'));
                 }
             },
         ];

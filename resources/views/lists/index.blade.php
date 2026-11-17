@@ -10,7 +10,7 @@
     @if ($lists->isEmpty())
         <p class="rounded-card border border-surface-line bg-surface px-4 py-3 text-[15px] text-muted">{{ __('lists.empty') }}</p>
     @else
-        <div x-data="{ current: {{ (int) old('list_id', $selected) }}, publicLists: @json($publicListIds) }" class="space-y-4">
+        <div x-data="{ current: {{ (int) old('list_id', $selected) }}, publicLists: @json($publicListIds), ownLists: @json($ownListIds), addableLists: @json($addableListIds) }" class="space-y-4">
             <div role="group" aria-label="{{ __('lists.lists') }}" class="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1">
                 @foreach ($lists as $list)
                     <x-ui.chip
@@ -56,7 +56,19 @@
                     <x-ui.message type="error" :dismissible="false">{{ $message }}</x-ui.message>
                 @enderror
 
-                <div class="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-10 -mx-4 bg-canvas px-4 py-2 sm:bottom-0 sm:mx-0 sm:px-0">
+                @php($selectedIs = fn (array $ids): bool => in_array($selected, $ids, true))
+
+                {{-- Someone else's shared list without AddItemsToSharedLists: a note instead of the add card. --}}
+                <p x-show="! addableLists.includes(current)" @if ($selectedIs($addableListIds)) x-cloak @endif class="flex min-h-11 items-center gap-2 rounded-card border border-surface-line bg-surface px-4 py-3 text-[15px] text-muted">
+                    <x-icon name="globe" size="5" class="shrink-0" />
+                    {{ __('lists.shared_list_needs_permission') }}
+                </p>
+
+                <div
+                    class="sticky bottom-[calc(4.75rem+env(safe-area-inset-bottom))] z-10 -mx-4 bg-canvas px-4 py-2 sm:bottom-0 sm:mx-0 sm:px-0"
+                    x-show="addableLists.includes(current)"
+                    @unless ($selectedIs($addableListIds)) x-cloak @endunless
+                >
                     <x-ui.quick-add
                         :label="__('lists.add_item')"
                         :placeholder="__('lists.item_placeholder')"
@@ -65,7 +77,7 @@
                         :value="old('item_name')"
                         expandable
                         :more-label="__('lists.more')"
-                        :expanded="$errors->hasAny(['item_description', 'item_estimate', 'item_is_public']) || filled(old('item_description')) || filled(old('item_estimate')) || old('item_is_public')"
+                        :expanded="$errors->hasAny(['item_description', 'item_estimate']) || filled(old('item_description')) || filled(old('item_estimate')) || old('item_private')"
                     >
                         <x-slot:hidden>
                             <input type="hidden" name="list_id" value="{{ old('list_id', $selected) }}" x-bind:value="current">
@@ -74,24 +86,22 @@
                         <x-ui.field :label="__('lists.description')" name="item_description" multiline maxlength="10000">{{ old('item_description') }}</x-ui.field>
                         <x-ui.field :label="__('lists.estimate')" name="item_estimate" type="number" step="1" inputmode="numeric" :value="old('item_estimate')" />
 
-                        {{-- Items in a private list stay private: the switch is disabled (and not sent) there. --}}
-                        @can('publish', App\Models\ListItem::class)
-                            <fieldset x-show="publicLists.includes(current)" x-bind:disabled="! publicLists.includes(current)" @unless (in_array($selected, $publicListIds, true)) x-cloak @endunless>
-                                <x-ui.switch :label="__('lists.is_public')" name="item_is_public" :checked="old('item_is_public')" icon="globe" />
-                            </fieldset>
-                        @endcan
+                        {{-- Your own shared list: shared by default, "Bara jag" keeps the item to yourself.
+                             Your private list: always private. Someone else's shared list: always shared. --}}
+                        @php($ownShared = array_values(array_intersect($ownListIds, $publicListIds)))
+                        <fieldset x-show="ownLists.includes(current) && publicLists.includes(current)" x-bind:disabled="! (ownLists.includes(current) && publicLists.includes(current))" @unless ($selectedIs($ownShared)) x-cloak disabled @endunless>
+                            <x-ui.switch :label="__('lists.private')" name="item_private" :checked="old('item_private')" icon="lock" />
+                        </fieldset>
 
-                        <p x-show="! publicLists.includes(current)" @if (in_array($selected, $publicListIds, true)) x-cloak @endif class="flex min-h-11 items-center gap-2 rounded-field bg-surface px-3 text-[14px] text-muted">
+                        <p x-show="! ownLists.includes(current)" @if ($selectedIs($ownListIds)) x-cloak @endif class="flex min-h-11 items-center gap-2 rounded-field bg-surface px-3 text-[14px] text-muted">
+                            <x-icon name="globe" size="5" class="shrink-0" />
+                            {{ __('lists.shared_list_info') }}
+                        </p>
+
+                        <p x-show="! publicLists.includes(current)" @if ($selectedIs($publicListIds)) x-cloak @endif class="flex min-h-11 items-center gap-2 rounded-field bg-surface px-3 text-[14px] text-muted">
                             <x-icon name="lock" size="5" class="shrink-0" />
                             {{ __('lists.private_list_info') }}
                         </p>
-
-                        @error('item_is_public')
-                            <p class="flex items-center gap-1.5 text-[13px] font-semibold text-field-error-ink">
-                                <x-icon name="exclamation-circle" size="4" stroke="2" class="shrink-0" />
-                                {{ $message }}
-                            </p>
-                        @enderror
                     </x-ui.quick-add>
                 </div>
             @endcan

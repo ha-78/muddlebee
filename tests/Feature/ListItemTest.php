@@ -26,7 +26,7 @@ it('asks guests to log in before list items', function () {
 });
 
 it('shows each list as a chip and its open items in a group', function () {
-    $user = User::factory()->withFeatures(Feature::PublishListItems)->create();
+    $user = User::factory()->withFeatures(Feature::AddItemsToSharedLists)->create();
     $clothes = ItemList::factory()->for($user)->private()->create([
         'name' => 'Kläder',
         'context_id' => $user->currentContextId(),
@@ -77,8 +77,8 @@ it('shows each list as a chip and its open items in a group', function () {
         ->assertSee('data-item', false)
         ->assertSee('href="'.route('lists.show', $clothes).'"', false)
         ->assertSee(__('lists.handled_link'), false)
-        ->assertSee('name="item_is_public" value="1"', false)
-        ->assertDontSee('name="item_is_public" value="1" checked', false)
+        ->assertSee(__('lists.shared_list_info'))
+        ->assertDontSee('name="item_is_public"', false)
         ->assertSee('Skor')
         ->assertSee('Mössa')
         ->assertSee('Lampa')
@@ -193,7 +193,7 @@ it('hides private items and items from lists the user cannot see', function () {
 
 it('saves a private item on a visible list', function () {
     $user = User::factory()->create();
-    $list = ItemList::factory()->for($user)->create([
+    $list = ItemList::factory()->for($user)->private()->create([
         'name' => 'Kläder',
         'context_id' => $user->currentContextId(),
     ]);
@@ -225,8 +225,8 @@ it('saves a private item on a visible list', function () {
         ->assertSee(__('lists.item_created'));
 });
 
-it('saves a public item with a description and estimate', function () {
-    $user = User::factory()->withFeatures(Feature::PublishListItems)->create();
+it('saves a shared item with a description and estimate in your own shared list', function () {
+    $user = User::factory()->create();
     $list = ItemList::factory()->for($user)->create([
         'context_id' => $user->currentContextId(),
     ]);
@@ -237,7 +237,6 @@ it('saves a public item with a description and estimate', function () {
             'item_name' => 'Lampa',
             'item_description' => ' Vid fönstret ',
             'item_estimate' => '250',
-            'item_is_public' => '1',
         ])
         ->assertRedirect(route('lists.index', ['list' => $list->id]));
 
@@ -248,30 +247,31 @@ it('saves a public item with a description and estimate', function () {
         ->and($item->is_public)->toBeTrue();
 });
 
-it('hides publishing an item from a member without that grant', function () {
-    $member = User::factory()->create();
-    $list = ItemList::factory()->for($member)->create([
-        'context_id' => $member->currentContextId(),
+it('lets the list creator keep an item private in their shared list', function () {
+    $user = User::factory()->create();
+    $list = ItemList::factory()->for($user)->create([
+        'context_id' => $user->currentContextId(),
     ]);
 
-    $this->actingAs($member)
-        ->get(route('lists.index'))
+    $this->actingAs($user)
+        ->get(route('lists.index', ['list' => $list->id]))
         ->assertSuccessful()
-        ->assertDontSee('name="item_is_public"', false);
+        ->assertSee('name="item_private"', false)
+        ->assertSee(__('lists.private'));
 
-    $this->actingAs($member)
+    $this->actingAs($user)
         ->post(route('lists.items.store'), [
             'list_id' => $list->id,
-            'item_name' => 'Skor',
-            'item_is_public' => '1',
+            'item_name' => 'Present',
+            'item_private' => '1',
         ])
-        ->assertForbidden();
+        ->assertRedirect(route('lists.index', ['list' => $list->id]));
 
-    expect(ListItem::query()->count())->toBe(0);
+    expect(ListItem::query()->sole()->is_public)->toBeFalse();
 });
 
-it('refuses a public item in a private list', function () {
-    $user = User::factory()->withFeatures(Feature::PublishListItems)->create();
+it('keeps items in a private list private', function () {
+    $user = User::factory()->create();
     $list = ItemList::factory()->for($user)->private()->create([
         'context_id' => $user->currentContextId(),
     ]);
@@ -280,15 +280,71 @@ it('refuses a public item in a private list', function () {
         ->post(route('lists.items.store'), [
             'list_id' => $list->id,
             'item_name' => 'Skor',
-            'item_is_public' => '1',
+            'item_private' => '0',
         ])
-        ->assertSessionHasErrors(['item_is_public' => __('lists.private_list_item')]);
+        ->assertRedirect(route('lists.index', ['list' => $list->id]));
+
+    expect(ListItem::query()->sole()->is_public)->toBeFalse();
+});
+
+it('always shares items added to someone else\'s shared list', function () {
+    $owner = User::factory()->create();
+    $helper = User::factory()->withFeatures(Feature::AddItemsToSharedLists)->create();
+    $list = ItemList::factory()->for($owner)->create([
+        'context_id' => $owner->currentContextId(),
+    ]);
+
+    $this->actingAs($helper)
+        ->post(route('lists.items.store'), [
+            'list_id' => $list->id,
+            'item_name' => 'Mjölk',
+            'item_private' => '1',
+        ])
+        ->assertRedirect(route('lists.index', ['list' => $list->id]));
+
+    expect(ListItem::query()->sole()->is_public)->toBeTrue();
+});
+
+it('needs the grant to add to a shared list someone else created', function () {
+    $owner = User::factory()->create();
+    $member = User::factory()->create();
+    $shared = ItemList::factory()->for($owner)->create([
+        'name' => 'Familjens',
+        'context_id' => $owner->currentContextId(),
+    ]);
+    $mine = ItemList::factory()->for($member)->create([
+        'name' => 'Min delade',
+        'context_id' => $member->currentContextId(),
+    ]);
+
+    $this->actingAs($member)
+        ->get(route('lists.index', ['list' => $shared->id]))
+        ->assertSuccessful()
+        ->assertSee(__('lists.shared_list_needs_permission'))
+        ->assertSee('addableLists: ['.$mine->id.']', false);
+
+    $this->actingAs($member)
+        ->from(route('lists.index', ['list' => $shared->id]))
+        ->post(route('lists.items.store'), [
+            'list_id' => $shared->id,
+            'item_name' => 'Skor',
+        ])
+        ->assertSessionHasErrors(['list_id' => __('lists.shared_list_needs_permission')]);
 
     expect(ListItem::query()->count())->toBe(0);
+
+    $this->actingAs($member)
+        ->post(route('lists.items.store'), [
+            'list_id' => $mine->id,
+            'item_name' => 'Skor',
+        ])
+        ->assertRedirect(route('lists.index', ['list' => $mine->id]));
+
+    expect(ListItem::query()->sole()->list_id)->toBe($mine->id);
 });
 
 it('shows that a private list keeps its items private', function () {
-    $user = User::factory()->withFeatures(Feature::PublishListItems)->create();
+    $user = User::factory()->withFeatures(Feature::AddItemsToSharedLists)->create();
     $private = ItemList::factory()->for($user)->private()->create([
         'name' => 'Böcker',
         'context_id' => $user->currentContextId(),
@@ -307,7 +363,7 @@ it('shows that a private list keeps its items private', function () {
         ->assertSee(__('lists.shared_one'))
         ->assertSee('publicLists: ['.$shared->id.']', false)
         ->assertDontSee('publicLists: ['.$private->id, false)
-        ->assertSee('x-bind:disabled="! publicLists.includes(current)"', false);
+        ->assertSee(__('lists.shared_list_info'));
 });
 
 it('requires an item name, a whole estimate, and a visible list', function () {

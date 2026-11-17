@@ -68,7 +68,7 @@ return [
         'reply-in-threads' => 'Reply in threads',
         'publish-bookmarks' => 'Share bookmarks',
         'publish-lists' => 'Share lists',
-        'publish-list-items' => 'Share list items',
+        'add-items-to-shared-lists' => 'Add items to shared lists created by others',
         'add-meals-to-wishlist' => 'Add meals to the wishlist',
         'vote-on-meals' => 'Vote on meal suggestions',
         'add-meals-to-shortlist' => 'Add meals to the short list',

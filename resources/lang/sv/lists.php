@@ -38,6 +38,7 @@ return [
     'shared_one' => 'Delad',
     'private_one' => 'Privat',
     'private_list_info' => 'Listan är privat, så posterna syns bara för dig.',
-    'private_list_item' => 'Poster i en privat lista kan inte delas.',
+    'shared_list_info' => 'Listan är delad, så posterna syns för hela hushållet.',
+    'shared_list_needs_permission' => 'Du kan bara lägga till poster i listor du själv har skapat.',
     'private' => 'Bara jag',
 ];

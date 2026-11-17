@@ -13,7 +13,7 @@ enum Feature: string
     case VoteInVotes = 'vote-in-votes';
     case CreateNotifications = 'create-notifications';
     case PublishLists = 'publish-lists';
-    case PublishListItems = 'publish-list-items';
+    case AddItemsToSharedLists = 'add-items-to-shared-lists';
     case PublishBookmarks = 'publish-bookmarks';
     case AddMealsToWishlist = 'add-meals-to-wishlist';
     case VoteOnMeals = 'vote-on-meals';
@@ -25,7 +25,7 @@ enum Feature: string
         return match ($this) {
             self::CreateThreads, self::ReplyInThreads, self::CreateVotes, self::VoteInVotes => Section::Threads,
             self::CreateNotifications => Section::Calendar,
-            self::PublishLists, self::PublishListItems => Section::Lists,
+            self::PublishLists, self::AddItemsToSharedLists => Section::Lists,
             self::PublishBookmarks => Section::Bookmarks,
             self::AddMealsToWishlist, self::VoteOnMeals, self::AddMealsToShortlist, self::PlanMeals => Section::Meals,
         };

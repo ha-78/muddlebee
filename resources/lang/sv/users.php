@@ -68,7 +68,7 @@ return [
         'reply-in-threads' => 'Svara i trådar',
         'publish-bookmarks' => 'Dela bokmärken',
         'publish-lists' => 'Dela listor',
-        'publish-list-items' => 'Dela listposter',
+        'add-items-to-shared-lists' => 'Lägga till poster i andras delade listor',
         'add-meals-to-wishlist' => 'Lägg måltider på önskelistan',
         'vote-on-meals' => 'Rösta på måltidsförslag',
         'add-meals-to-shortlist' => 'Lägg måltider på kortlistan',

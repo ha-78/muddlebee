@@ -27,6 +27,9 @@ class ListItemPolicy
         return (int) $actor->getKey() === (int) $item->itemList->user_id;
     }
 
+    /**
+     * Adding to your own lists is always allowed; adding to a shared list someone else created needs AddItemsToSharedLists.
+     */
     public function create(User $actor, ?ItemList $list = null): bool
     {
         if (! $actor->canWrite()) {
@@ -37,12 +40,24 @@ class ListItemPolicy
             return true;
         }
 
-        return $actor->can('view', $list);
+        if (! $actor->can('view', $list)) {
+            return false;
+        }
+
+        return $this->ownsList($actor, $list) || $actor->allows(Feature::AddItemsToSharedLists);
     }
 
-    public function publish(User $actor): bool
+    /**
+     * Only the list's creator may keep an item to themselves, and only in a shared list (a private list's items are private anyway).
+     */
+    public function addPrivate(User $actor, ItemList $list): bool
     {
-        return $actor->canWrite() && $actor->allows(Feature::PublishListItems);
+        return $this->create($actor, $list) && $this->ownsList($actor, $list) && $list->is_public;
+    }
+
+    private function ownsList(User $actor, ItemList $list): bool
+    {
+        return (int) $actor->getKey() === (int) $list->user_id;
     }
 
     public function handle(User $actor, ListItem $item): bool

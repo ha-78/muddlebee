@@ -20,13 +20,16 @@ class ListController extends Controller
         Gate::authorize('viewAny', ItemList::class);
         Gate::authorize('viewAny', ListItem::class);
 
-        $visible = $lists->forUserWithItems($request->user());
+        $user = $request->user();
+        $visible = $lists->forUserWithItems($user);
         $selected = $visible->firstWhere('id', $request->integer('list')) ?? $visible->first();
 
         return view('lists.index', [
             'lists' => $visible,
             'selected' => $selected?->id,
             'publicListIds' => $visible->where('is_public', true)->pluck('id')->values()->all(),
+            'ownListIds' => $visible->filter(fn (ItemList $list): bool => (int) $list->user_id === (int) $user->getKey())->pluck('id')->values()->all(),
+            'addableListIds' => $visible->filter(fn (ItemList $list): bool => $user->can('create', [ListItem::class, $list]))->pluck('id')->values()->all(),
         ]);
     }
 

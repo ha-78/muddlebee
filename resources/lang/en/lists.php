@@ -38,6 +38,7 @@ return [
     'shared_one' => 'Shared',
     'private_one' => 'Private',
     'private_list_info' => 'This list is private, so its items are only visible to you.',
-    'private_list_item' => 'Items in a private list cannot be shared.',
+    'shared_list_info' => 'The list is shared, so its items are visible to the whole household.',
+    'shared_list_needs_permission' => 'You can only add items to lists you created yourself.',
     'private' => 'Only me',
 ];

@@ -21,7 +21,7 @@ class ListItemController extends Controller
             $request->validated('item_name'),
             $request->validated('item_description'),
             $request->estimate(),
-            (bool) $request->validated('item_is_public'),
+            (bool) $request->validated('item_private'),
         );
 
         return to_route('lists.index', ['list' => $item->list_id])->with('status', __('lists.item_created'));

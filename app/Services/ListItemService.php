@@ -10,11 +10,17 @@ use Illuminate\Database\Eloquent\Collection;
 
 class ListItemService
 {
-    public function create(User $actor, ItemList $list, string $name, ?string $description, ?int $estimate, bool $isPublic): ListItem
+    /**
+     * Add an item to a list. Items in a private list are private. In a shared list they are shared,
+     * unless the list's creator asks to keep the item to themselves; anyone else's items are always shared.
+     */
+    public function create(User $actor, ItemList $list, string $name, ?string $description, ?int $estimate, bool $private = false): ListItem
     {
         if (! $actor->can('create', [ListItem::class, $list])) {
             throw new AuthorizationException;
         }
+
+        $isPublic = (bool) $list->is_public && ! ($private && $actor->can('addPrivate', [ListItem::class, $list]));
 
         return $list->items()->create([
             'name' => $name,
