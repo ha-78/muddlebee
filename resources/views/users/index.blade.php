@@ -97,7 +97,7 @@
                                 spellcheck="false"
                                 autocomplete="off"
                                 x-on:focus="$el.select()"
-                                class="h-10 w-full min-w-0 rounded-field bg-field px-3 text-[13px] text-field-ink"
+                                class="h-10 w-full min-w-0 rounded-field bg-field px-3 text-base text-field-ink sm:text-[13px]"
                             >
                             <x-ui.button variant="tonal" class="h-10 shrink-0" x-on:click="copy($refs.link.value)">
                                 <x-icon name="link" size="4" stroke="2" />

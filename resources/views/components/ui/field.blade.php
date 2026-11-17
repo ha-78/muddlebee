@@ -9,7 +9,8 @@
     'showError' => true,
 ])
 
-{{-- A labelled field. "options" (value => label) makes it a select. "id" is needed when two fields share a name;
+{{-- A labelled field. Text is 16 px on phones (iPhone Safari zooms into fields under 16 px) and 15 px from sm up.
+     "options" (value => label) makes it a select. "id" is needed when two fields share a name;
      "showError" lets a page decide which of them shows the shared error. --}}
 @php($id ??= $name)
 @php($invalid = $showError && $errors->has($name))
@@ -21,7 +22,7 @@
         <select
             {{ $attributes
                 ->class([
-                    'mt-1 h-11 w-full rounded-field border-2 bg-field px-3 text-[15px] text-field-ink',
+                    'mt-1 h-11 w-full rounded-field border-2 bg-field px-3 text-base text-field-ink sm:text-[15px]',
                     'border-field-error' => $invalid,
                     'border-transparent' => ! $invalid,
                 ])
@@ -40,7 +41,7 @@
         <textarea
             {{ $attributes
                 ->class([
-                    'mt-1 min-h-24 w-full rounded-field border-2 bg-field px-3 py-2 text-[15px] text-field-ink',
+                    'mt-1 min-h-24 w-full rounded-field border-2 bg-field px-3 py-2 text-base text-field-ink sm:text-[15px]',
                     'border-field-error' => $invalid,
                     'border-transparent' => ! $invalid,
                 ])
@@ -55,7 +56,7 @@
         <input
             {{ $attributes
                 ->class([
-                    'mt-1 h-11 w-full rounded-field border-2 bg-field px-3 text-[15px] text-field-ink',
+                    'mt-1 h-11 w-full rounded-field border-2 bg-field px-3 text-base text-field-ink sm:text-[15px]',
                     'border-field-error' => $invalid,
                     'border-transparent' => ! $invalid,
                 ])

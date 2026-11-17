@@ -61,7 +61,7 @@
                 @if ($invalid) aria-invalid="true" aria-describedby="{{ $name }}-error" @endif
                 {{ $attributes->only(['required', 'maxlength']) }}
                 @class([
-                    'field-sizing-content max-h-40 min-h-11 min-w-0 flex-1 resize-none rounded-field border-2 bg-field px-3 py-2 text-[15px] text-field-ink placeholder:text-field-ink/60',
+                    'field-sizing-content max-h-40 min-h-11 min-w-0 flex-1 resize-none rounded-field border-2 bg-field px-3 py-2 text-base text-field-ink sm:text-[15px] placeholder:text-field-ink/60',
                     'border-field-error' => $invalid,
                     'border-transparent' => ! $invalid,
                 ])
@@ -75,7 +75,7 @@
                 @if ($invalid) aria-invalid="true" aria-describedby="{{ $name }}-error" @endif
                 {{ $attributes->only(['required', 'maxlength']) }}
                 @class([
-                    'h-11 min-w-0 flex-1 rounded-field border-2 bg-field px-3 text-[15px] text-field-ink placeholder:text-field-ink/60',
+                    'h-11 min-w-0 flex-1 rounded-field border-2 bg-field px-3 text-base text-field-ink sm:text-[15px] placeholder:text-field-ink/60',
                     'border-field-error' => $invalid,
                     'border-transparent' => ! $invalid,
                 ])

@@ -1,0 +1,19 @@
+{
+    "name": "Muddlebee",
+    "short_name": "Muddlebee",
+    "description": "Hushållets gemensamma plats: kalender, trådar, listor, bokmärken och måltider.",
+    "lang": "sv",
+    "start_url": "/home",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#fbf6f0",
+    "theme_color": "#e8d0b6",
+    "icons": [
+        {
+            "src": "/favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        }
+    ]
+}
