@@ -79,6 +79,12 @@ class StoreListItemRequest extends FormRequest
                 // Your own lists are always open to you; someone else's shared list needs AddItemsToSharedLists.
                 $list = ItemList::query()->find($this->integer('list_id'));
 
+                if ($list?->isArchived()) {
+                    $validator->errors()->add('list_id', __('lists.archived_notice'));
+
+                    return;
+                }
+
                 if ($list !== null && ! $this->user()->can('create', [ListItem::class, $list])) {
                     $validator->errors()->add('list_id', __('lists.shared_list_needs_permission'));
                 }

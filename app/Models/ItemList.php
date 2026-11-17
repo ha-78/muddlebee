@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-#[Fillable(['context_id', 'user_id', 'name', 'is_public'])]
+#[Fillable(['context_id', 'user_id', 'name', 'is_public', 'archived_at'])]
 class ItemList extends Model
 {
     /** @use HasFactory<ItemListFactory> */
@@ -79,13 +79,37 @@ class ItemList extends Model
     {
         return [
             'is_public' => 'boolean',
+            'archived_at' => 'datetime',
         ];
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->archived_at !== null;
+    }
+
+    /**
+     * @param  Builder<ItemList>  $query
+     * @return Builder<ItemList>
+     */
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query->whereNull($query->qualifyColumn('archived_at'));
+    }
+
+    /**
+     * @param  Builder<ItemList>  $query
+     * @return Builder<ItemList>
+     */
+    public function scopeArchived(Builder $query): Builder
+    {
+        return $query->whereNotNull($query->qualifyColumn('archived_at'));
     }
 
     /**
      * What the "Ändra lista" sheet needs.
      *
-     * @return array{id: int, action: string, name: string, is_public: bool}
+     * @return array{id: int, action: string, name: string, is_public: bool, archived: bool, archive: string, unarchive: string}
      */
     public function toEditor(): array
     {
@@ -94,6 +118,9 @@ class ItemList extends Model
             'action' => route('lists.update', $this),
             'name' => $this->name,
             'is_public' => (bool) $this->is_public,
+            'archived' => $this->isArchived(),
+            'archive' => route('lists.archive', $this),
+            'unarchive' => route('lists.unarchive', $this),
         ];
     }
 }

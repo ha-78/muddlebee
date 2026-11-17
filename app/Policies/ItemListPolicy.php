@@ -51,6 +51,14 @@ class ItemListPolicy
             && (int) $list->context_id === $actor->currentContextId();
     }
 
+    /**
+     * Archiving and restoring: the same people who may change the list.
+     */
+    public function archive(User $actor, ItemList $list): bool
+    {
+        return $this->update($actor, $list);
+    }
+
     public function delete(User $actor, ItemList $list): bool
     {
         return $this->manage($actor)

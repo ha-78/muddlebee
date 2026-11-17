@@ -19,6 +19,7 @@ class ListService
         return ItemList::query()
             ->with('user')
             ->visibleTo($user)
+            ->active()
             ->orderBy('name')
             ->orderBy('id')
             ->get();
@@ -73,6 +74,40 @@ class ListService
         ]);
 
         return $list;
+    }
+
+    /**
+     * Archived lists the user can see, most recently archived first.
+     *
+     * @return Collection<int, ItemList>
+     */
+    public function archivedFor(User $user): Collection
+    {
+        return ItemList::query()
+            ->with('user')
+            ->visibleTo($user)
+            ->archived()
+            ->latest('archived_at')
+            ->orderBy('id')
+            ->get();
+    }
+
+    public function archive(User $actor, ItemList $list): void
+    {
+        if (! $actor->can('archive', $list)) {
+            throw new AuthorizationException;
+        }
+
+        $list->update(['archived_at' => now()]);
+    }
+
+    public function unarchive(User $actor, ItemList $list): void
+    {
+        if (! $actor->can('archive', $list)) {
+            throw new AuthorizationException;
+        }
+
+        $list->update(['archived_at' => null]);
     }
 
     public function delete(User $actor, ItemList $list): void

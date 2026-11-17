@@ -1,13 +1,17 @@
 @props(['list'])
 
-{{-- One list on the edit lists page. --}}
+{{-- One list on the edit lists page; its name opens the list, where the "..." menu archives or restores it. --}}
 <div {{ $attributes->class('flex min-h-13 items-center gap-1 py-1.5 pr-1.5 pl-4') }}>
     <div class="min-w-0 flex-1 py-1">
-        <p class="truncate text-[15px] font-semibold text-ink">{{ $list->name }}</p>
+        <a href="{{ route('lists.show', $list) }}" class="block truncate text-[15px] font-semibold text-ink">{{ $list->name }}</a>
         <p class="truncate text-[13px] text-muted">
             {{ $list->user->name }}
             <span aria-hidden="true"> · </span>
-            <time datetime="{{ $list->created_at->timezone(config('app.timezone'))->toDateString() }}">{{ $list->created_at->timezone(config('app.timezone'))->format('Y-m-d') }}</time>
+            @if ($list->isArchived())
+                <time datetime="{{ $list->archived_at->timezone(config('app.timezone'))->toDateString() }}">{{ __('lists.archived_on', ['date' => $list->archived_at->timezone(config('app.timezone'))->format('Y-m-d')]) }}</time>
+            @else
+                <time datetime="{{ $list->created_at->timezone(config('app.timezone'))->toDateString() }}">{{ $list->created_at->timezone(config('app.timezone'))->format('Y-m-d') }}</time>
+            @endif
         </p>
     </div>
 

@@ -1,11 +1,19 @@
 @extends('layouts.app')
 
 @section('title', $list->name)
+@section('back', route('lists.index', $list->isArchived() ? [] : ['list' => $list->id]))
 
 @section('content')
     <div class="space-y-6">
         @if (auth()->user()->canWrite())
             <x-lists.edit-item-sheet />
+        @endif
+
+        @if ($list->isArchived())
+            <p class="flex items-center gap-2 rounded-card border border-surface-line bg-surface px-4 py-3 text-[15px] text-muted">
+                <x-icon name="archive" size="5" class="shrink-0" />
+                {{ __('lists.archived_notice') }}
+            </p>
         @endif
 
         @if ($open->isEmpty() && $handled->isEmpty())

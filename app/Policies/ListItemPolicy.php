@@ -41,7 +41,7 @@ class ListItemPolicy
             return true;
         }
 
-        if (! $actor->can('view', $list)) {
+        if (! $actor->can('view', $list) || $list->isArchived()) {
             return false;
         }
 
@@ -61,10 +61,14 @@ class ListItemPolicy
         return (int) $actor->getKey() === (int) $list->user_id;
     }
 
+    /**
+     * Archived lists are read-only: no adding, checking off or editing until the list is restored.
+     */
     public function handle(User $actor, ListItem $item): bool
     {
         return $actor->canWrite()
             && $item->handled_at === null
+            && ! $item->itemList->isArchived()
             && $actor->can('view', $item);
     }
 
@@ -72,6 +76,7 @@ class ListItemPolicy
     {
         return $actor->canWrite()
             && $item->handled_at !== null
+            && ! $item->itemList->isArchived()
             && $actor->can('view', $item);
     }
 
@@ -81,6 +86,7 @@ class ListItemPolicy
     public function update(User $actor, ListItem $item): bool
     {
         return $actor->canWrite()
+            && ! $item->itemList->isArchived()
             && $actor->can('view', $item)
             && ($this->ownsList($actor, $item->itemList) || $actor->role->atLeast(Role::Admin));
     }

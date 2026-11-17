@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ArchiveListRequest;
 use App\Http\Requests\DeleteListRequest;
 use App\Http\Requests\StoreListRequest;
 use App\Http\Requests\UpdateListRequest;
@@ -52,10 +53,20 @@ class ListController extends Controller
     {
         Gate::authorize('create', ItemList::class);
 
+        $showingArchived = $request->boolean('archived');
+
+        if ($showingArchived) {
+            return view('lists.edit', [
+                'showingArchived' => true,
+                'archived' => $lists->archivedFor($request->user()),
+            ]);
+        }
+
         [$shared, $private] = $lists->forUser($request->user())
             ->partition(fn (ItemList $list): bool => $list->is_public);
 
         return view('lists.edit', [
+            'showingArchived' => false,
             'shared' => $shared,
             'private' => $private,
         ]);
@@ -77,6 +88,20 @@ class ListController extends Controller
         $lists->update($request->user(), $list, $request->validated('list_name'), (bool) $request->validated('list_is_public'));
 
         return back(fallback: route('lists.edit'))->with('status', __('lists.updated'));
+    }
+
+    public function archive(ArchiveListRequest $request, ItemList $list, ListService $lists): RedirectResponse
+    {
+        $lists->archive($request->user(), $list);
+
+        return back(fallback: route('lists.edit'))->with('status', __('lists.archived'));
+    }
+
+    public function unarchive(ArchiveListRequest $request, ItemList $list, ListService $lists): RedirectResponse
+    {
+        $lists->unarchive($request->user(), $list);
+
+        return back(fallback: route('lists.edit'))->with('status', __('lists.unarchived'));
     }
 
     public function destroy(DeleteListRequest $request, ItemList $list, ListService $lists): RedirectResponse

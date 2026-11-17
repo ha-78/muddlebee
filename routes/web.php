@@ -44,6 +44,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/lists/items/{item}/unhandle', [ListItemController::class, 'unhandle'])->name('lists.items.unhandle');
     Route::delete('/lists/items/{item}', [ListItemController::class, 'destroy'])->name('lists.items.destroy');
     Route::patch('/lists/{list}', [ListController::class, 'update'])->name('lists.update');
+    Route::patch('/lists/{list}/archive', [ListController::class, 'archive'])->name('lists.archive');
+    Route::patch('/lists/{list}/unarchive', [ListController::class, 'unarchive'])->name('lists.unarchive');
     Route::delete('/lists/{list}', [ListController::class, 'destroy'])->name('lists.destroy');
 
     Route::get('/bookmarks', [BookmarkController::class, 'index'])->name('bookmarks.index');
