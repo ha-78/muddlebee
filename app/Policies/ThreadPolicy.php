@@ -16,9 +16,12 @@ class ThreadPolicy
         return true;
     }
 
+    /**
+     * Threads belong to one household; everyone in it may read them.
+     */
     public function view(User $actor, Thread $thread): bool
     {
-        return true;
+        return $this->inContext($actor, $thread);
     }
 
     public function create(User $actor): bool
@@ -28,21 +31,28 @@ class ThreadPolicy
 
     public function reply(User $actor, Thread $thread): bool
     {
-        return $actor->canWrite() && $actor->allows(Feature::ReplyInThreads);
+        return $this->inContext($actor, $thread)
+            && $actor->canWrite()
+            && $actor->allows(Feature::ReplyInThreads);
     }
 
     public function update(User $actor, Thread $thread): bool
     {
-        return $this->managesOwnedRecord($actor, $thread->user_id);
+        return $this->inContext($actor, $thread) && $this->managesOwnedRecord($actor, $thread->user_id);
     }
 
     public function archive(User $actor, Thread $thread): bool
     {
-        return $this->managesOwnedRecord($actor, $thread->user_id);
+        return $this->inContext($actor, $thread) && $this->managesOwnedRecord($actor, $thread->user_id);
     }
 
     public function delete(User $actor, Thread $thread): bool
     {
-        return $this->managesOwnedRecord($actor, $thread->user_id);
+        return $this->inContext($actor, $thread) && $this->managesOwnedRecord($actor, $thread->user_id);
+    }
+
+    private function inContext(User $actor, Thread $thread): bool
+    {
+        return (int) $thread->context_id === $actor->currentContextId();
     }
 }

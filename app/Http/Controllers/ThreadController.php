@@ -21,7 +21,7 @@ class ThreadController extends Controller
         $showingArchived = $request->boolean('archived');
         $data = [
             'user' => $request->user(),
-            'threads' => $threads->list($showingArchived),
+            'threads' => $threads->list($request->user(), $showingArchived),
             'showingArchived' => $showingArchived,
             'listHeading' => __($showingArchived ? 'threads.archive' : 'threads.threads'),
             'emptyMessage' => __($showingArchived ? 'threads.empty_archive' : 'threads.empty'),

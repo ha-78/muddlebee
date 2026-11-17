@@ -58,6 +58,17 @@ class Thread extends Model
     }
 
     /**
+     * Threads in the user's household.
+     *
+     * @param  Builder<Thread>  $query
+     * @return Builder<Thread>
+     */
+    public function scopeForContext(Builder $query, User $user): Builder
+    {
+        return $query->where($query->qualifyColumn('context_id'), $user->currentContextId());
+    }
+
+    /**
      * @param  Builder<Thread>  $query
      * @return Builder<Thread>
      */
@@ -96,7 +107,7 @@ class Thread extends Model
      */
     public function replies(): HasMany
     {
-        return $this->hasMany(Reply::class)->orderBy('id');
+        return $this->hasMany(Reply::class)->orderBy('id')->chaperone('thread');
     }
 
     /**

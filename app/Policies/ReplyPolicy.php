@@ -12,6 +12,7 @@ class ReplyPolicy
 
     public function delete(User $actor, Reply $reply): bool
     {
-        return $this->managesOwnedRecord($actor, $reply->user_id);
+        return (int) $reply->thread->context_id === $actor->currentContextId()
+            && $this->managesOwnedRecord($actor, $reply->user_id);
     }
 }

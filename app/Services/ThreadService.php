@@ -25,10 +25,14 @@ class ThreadService
         return (int) Cache::get(self::VERSION_KEY);
     }
 
-    public function list(bool $archived): LengthAwarePaginator
+    /**
+     * The user's household's threads, open or archived.
+     */
+    public function list(User $user, bool $archived): LengthAwarePaginator
     {
         return Thread::query()
             ->with(['user', 'replies.user'])
+            ->forContext($user)
             ->when(
                 $archived,
                 fn (Builder $query): Builder => $query->archived(),
