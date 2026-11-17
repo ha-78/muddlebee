@@ -31,6 +31,33 @@ class ListItemService
     }
 
     /**
+     * Change an item's name, description and estimate. The list's creator can also switch "Bara jag"
+     * in a shared list; in a private list items stay private, and others leave the setting as it is.
+     */
+    public function update(User $actor, ListItem $item, string $name, ?string $description, ?int $estimate, bool $private): ListItem
+    {
+        if (! $actor->can('update', $item)) {
+            throw new AuthorizationException;
+        }
+
+        $list = $item->itemList;
+        $isPublic = match (true) {
+            ! $list->is_public => false,
+            $actor->can('addPrivate', [ListItem::class, $list]) => ! $private,
+            default => (bool) $item->is_public,
+        };
+
+        $item->update([
+            'name' => $name,
+            'description' => $description,
+            'estimate' => $estimate,
+            'is_public' => $isPublic,
+        ]);
+
+        return $item;
+    }
+
+    /**
      * @return Collection<int, ListItem>
      */
     public function forList(User $user, ItemList $list): Collection

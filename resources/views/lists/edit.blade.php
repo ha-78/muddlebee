@@ -4,6 +4,8 @@
 
 @section('content')
     <div class="space-y-6">
+        <x-lists.edit-list-sheet />
+
         <x-ui.quick-add :label="__('lists.new_list')" :placeholder="__('lists.name')" name="name" :action="route('lists.store')" :value="old('name')">
             @can('publish', App\Models\ItemList::class)
                 <x-ui.switch :label="__('lists.is_public')" name="is_public" :checked="old('is_public')" icon="globe" />

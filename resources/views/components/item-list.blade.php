@@ -11,6 +11,10 @@
         </p>
     </div>
 
+    @can('update', $list)
+        <x-lists.edit-button event="edit-list" :editor="$list->toEditor()" :label="__('lists.change_list', ['name' => $list->name])" />
+    @endcan
+
     @can('delete', $list)
         <form method="POST" action="{{ route('lists.destroy', $list) }}" onsubmit="return confirm(@js(__('lists.confirm_delete')))">
             @csrf

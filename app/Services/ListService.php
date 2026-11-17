@@ -54,6 +54,27 @@ class ListService
         ]);
     }
 
+    /**
+     * Rename a list and, with the right to publish lists, share or unshare it. Its items keep their own setting.
+     */
+    public function update(User $actor, ItemList $list, string $name, bool $isPublic): ItemList
+    {
+        if (! $actor->can('update', $list)) {
+            throw new AuthorizationException;
+        }
+
+        if ($isPublic !== (bool) $list->is_public && ! $actor->can('publish', ItemList::class)) {
+            throw new AuthorizationException;
+        }
+
+        $list->update([
+            'name' => $name,
+            'is_public' => $isPublic,
+        ]);
+
+        return $list;
+    }
+
     public function delete(User $actor, ItemList $list): void
     {
         if (! $actor->can('delete', $list)) {

@@ -1,6 +1,6 @@
 @props(['item'])
 
-{{-- One open item on the lists page. Checking it hands it over to handleItem in app.js. --}}
+{{-- One open item on the lists page. Checking it hands it over to handleItem in app.js; the pencil opens "Ändra post". --}}
 <div
     data-item
     @can('handle', $item)
@@ -40,6 +40,10 @@
     @if ($item->estimate !== null)
         <span class="shrink-0 px-1.5 text-sm text-muted tabular-nums">{{ $item->estimate }}</span>
     @endif
+
+    @can('update', $item)
+        <x-lists.edit-button event="edit-item" :editor="$item->toEditor(auth()->user())" :label="__('lists.change_list', ['name' => $item->name])" />
+    @endcan
 
     @can('delete', $item)
         <form method="POST" action="{{ route('lists.items.destroy', $item) }}" onsubmit="return confirm(@js(__('lists.confirm_delete_item')))">

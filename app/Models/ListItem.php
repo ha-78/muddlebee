@@ -70,4 +70,24 @@ class ListItem extends Model
             'handled_at' => 'datetime',
         ];
     }
+
+    /**
+     * What the "Ändra post" sheet needs. "can_private": the "Bara jag" switch applies (the creator, in a shared list).
+     *
+     * @return array{id: int, action: string, name: string, description: string, estimate: string, private: bool, can_private: bool}
+     */
+    public function toEditor(?User $actor = null): array
+    {
+        $list = $this->itemList;
+
+        return [
+            'id' => $this->getKey(),
+            'action' => route('lists.items.update', $this),
+            'name' => $this->name,
+            'description' => $this->description ?? '',
+            'estimate' => $this->estimate === null ? '' : (string) $this->estimate,
+            'private' => ! $this->is_public,
+            'can_private' => $actor !== null && $actor->can('addPrivate', [self::class, $list]),
+        ];
+    }
 }

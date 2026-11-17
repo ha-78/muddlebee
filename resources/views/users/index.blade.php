@@ -4,24 +4,25 @@
 
 @section('content')
     <div class="space-y-6">
-        @if ($context)
-            <x-ui.form-card :label="__('users.context')" :action="route('contexts.update', $context)" method="PATCH">
-                <input type="hidden" name="form" value="context">
+        <x-ui.group :heading="__('users.users')">
+            @foreach ($users as $member)
+                <a href="{{ route('users.show', $member) }}" class="flex min-h-13 items-center gap-3 px-4 py-2 text-ink">
+                    <span aria-hidden="true" class="grid size-9 shrink-0 place-items-center rounded-full bg-tonal text-[14px] font-semibold text-tonal-ink">{{ Str::upper(Str::substr($member->name, 0, 1)) }}</span>
+                    <span class="min-w-0 flex-1">
+                        <span class="flex flex-wrap items-center gap-2">
+                            <span class="text-[15px] font-semibold">{{ $member->name }}</span>
+                            <x-ui.badge>{{ $member->role->label() }}</x-ui.badge>
+                        </span>
+                        <span class="block truncate text-[13px] text-muted">{{ $member->email }}</span>
+                    </span>
+                    <span class="sr-only">{{ __('users.manage') }}</span>
+                    <span class="text-muted"><x-icon name="chevron-right" size="4" stroke="2" /></span>
+                </a>
+            @endforeach
+        </x-ui.group>
 
-                <x-ui.field
-                    :label="__('users.context_name')"
-                    name="name"
-                    id="context-name"
-                    :value="old('form') === 'invite' ? $context->name : old('name', $context->name)"
-                    :show-error="old('form') !== 'invite'"
-                    required
-                    maxlength="255"
-                />
-
-                <div class="flex justify-end">
-                    <x-ui.button type="submit" variant="tonal">{{ __('users.save_context') }}</x-ui.button>
-                </div>
-            </x-ui.form-card>
+        @if ($users->hasPages())
+            <div>{{ $users->links() }}</div>
         @endif
 
         @if ($canInvite)
@@ -111,25 +112,24 @@
             </x-ui.group>
         @endif
 
-        <x-ui.group :heading="__('users.users')">
-            @foreach ($users as $member)
-                <a href="{{ route('users.show', $member) }}" class="flex min-h-13 items-center gap-3 px-4 py-2 text-ink">
-                    <span aria-hidden="true" class="grid size-9 shrink-0 place-items-center rounded-full bg-tonal text-[14px] font-semibold text-tonal-ink">{{ Str::upper(Str::substr($member->name, 0, 1)) }}</span>
-                    <span class="min-w-0 flex-1">
-                        <span class="flex flex-wrap items-center gap-2">
-                            <span class="text-[15px] font-semibold">{{ $member->name }}</span>
-                            <x-ui.badge>{{ $member->role->label() }}</x-ui.badge>
-                        </span>
-                        <span class="block truncate text-[13px] text-muted">{{ $member->email }}</span>
-                    </span>
-                    <span class="sr-only">{{ __('users.manage') }}</span>
-                    <span class="text-muted"><x-icon name="chevron-right" size="4" stroke="2" /></span>
-                </a>
-            @endforeach
-        </x-ui.group>
+        @if ($context)
+            <x-ui.form-card :label="__('users.context')" :action="route('contexts.update', $context)" method="PATCH">
+                <input type="hidden" name="form" value="context">
 
-        @if ($users->hasPages())
-            <div>{{ $users->links() }}</div>
+                <x-ui.field
+                    :label="__('users.context_name')"
+                    name="name"
+                    id="context-name"
+                    :value="old('form') === 'invite' ? $context->name : old('name', $context->name)"
+                    :show-error="old('form') !== 'invite'"
+                    required
+                    maxlength="255"
+                />
+
+                <div class="flex justify-end">
+                    <x-ui.button type="submit" variant="tonal">{{ __('users.save_context') }}</x-ui.button>
+                </div>
+            </x-ui.form-card>
         @endif
     </div>
 @endsection

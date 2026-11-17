@@ -4,6 +4,10 @@
 
 @section('content')
     <div class="space-y-6">
+        @if (auth()->user()->canWrite())
+            <x-lists.edit-item-sheet />
+        @endif
+
         @if ($open->isEmpty() && $handled->isEmpty())
             <p class="rounded-card border border-surface-line bg-surface px-4 py-3 text-[15px] text-muted">{{ __('lists.items_empty') }}</p>
         @endif

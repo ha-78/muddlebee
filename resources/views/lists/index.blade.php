@@ -10,6 +10,10 @@
     @if ($lists->isEmpty())
         <p class="rounded-card border border-surface-line bg-surface px-4 py-3 text-[15px] text-muted">{{ __('lists.empty') }}</p>
     @else
+        @if (auth()->user()->canWrite())
+            <x-lists.edit-item-sheet />
+        @endif
+
         <div x-data="{ current: {{ (int) old('list_id', $selected) }}, publicLists: @json($publicListIds), ownLists: @json($ownListIds), addableLists: @json($addableListIds) }" class="space-y-4">
             <div role="group" aria-label="{{ __('lists.lists') }}" class="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1">
                 @foreach ($lists as $list)

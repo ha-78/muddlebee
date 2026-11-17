@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\DeleteListRequest;
 use App\Http\Requests\StoreListRequest;
+use App\Http\Requests\UpdateListRequest;
 use App\Models\ItemList;
 use App\Models\ListItem;
 use App\Services\ListItemService;
@@ -69,6 +70,13 @@ class ListController extends Controller
         );
 
         return to_route('lists.edit')->with('status', __('lists.created'));
+    }
+
+    public function update(UpdateListRequest $request, ItemList $list, ListService $lists): RedirectResponse
+    {
+        $lists->update($request->user(), $list, $request->validated('list_name'), (bool) $request->validated('list_is_public'));
+
+        return back(fallback: route('lists.edit'))->with('status', __('lists.updated'));
     }
 
     public function destroy(DeleteListRequest $request, ItemList $list, ListService $lists): RedirectResponse

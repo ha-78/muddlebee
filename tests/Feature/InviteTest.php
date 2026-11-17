@@ -19,7 +19,13 @@ it('shows invite links only to a god', function () {
         ->assertSuccessful()
         ->assertSee(__('users.invites.heading'))
         ->assertSee(__('users.invites.lifetime'))
-        ->assertSee(__('users.invites.empty'));
+        ->assertSee(__('users.invites.empty'))
+        ->assertSeeInOrder([
+            $god->email,
+            __('users.invites.heading'),
+            __('users.invites.pending'),
+            __('users.context_name'),
+        ]);
 
     $this->actingAs($admin)
         ->get(route('users.index'))

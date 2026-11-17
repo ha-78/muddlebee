@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\Feature;
+use App\Enums\Role;
 use App\Models\ItemList;
 use App\Models\ListItem;
 use App\Models\User;
@@ -72,6 +73,16 @@ class ListItemPolicy
         return $actor->canWrite()
             && $item->handled_at !== null
             && $actor->can('view', $item);
+    }
+
+    /**
+     * Changing an item: the list's creator, or an admin, while the item is visible to them.
+     */
+    public function update(User $actor, ListItem $item): bool
+    {
+        return $actor->canWrite()
+            && $actor->can('view', $item)
+            && ($this->ownsList($actor, $item->itemList) || $actor->role->atLeast(Role::Admin));
     }
 
     public function delete(User $actor, ListItem $item): bool

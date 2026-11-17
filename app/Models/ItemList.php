@@ -63,7 +63,8 @@ class ItemList extends Model
      */
     public function items(): HasMany
     {
-        return $this->hasMany(ListItem::class, 'list_id');
+        // chaperone(): each item knows its list without another query (policies and the edit sheet use it).
+        return $this->hasMany(ListItem::class, 'list_id')->chaperone('itemList');
     }
 
     public function hasEstimatedItem(): bool
@@ -78,6 +79,21 @@ class ItemList extends Model
     {
         return [
             'is_public' => 'boolean',
+        ];
+    }
+
+    /**
+     * What the "Ändra lista" sheet needs.
+     *
+     * @return array{id: int, action: string, name: string, is_public: bool}
+     */
+    public function toEditor(): array
+    {
+        return [
+            'id' => $this->getKey(),
+            'action' => route('lists.update', $this),
+            'name' => $this->name,
+            'is_public' => (bool) $this->is_public,
         ];
     }
 }
