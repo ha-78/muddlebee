@@ -161,19 +161,22 @@ return [
     |
     */
 
+    // Muddlebee only has a login page, so the features without pages are off: their routes would answer
+    // with errors or work without any UI. To bring password reset back, add its pages
+    // (Fortify::requestPasswordResetLinkView, Fortify::resetPasswordView) and set up mail first.
     'features' => [
-        Features::resetPasswords(),
+        // Features::resetPasswords(),
         // Features::emailVerification(),
-        Features::updateProfileInformation(),
-        Features::updatePasswords(),
-        Features::twoFactorAuthentication([
-            'confirm' => true,
-            'confirmPassword' => true,
-            // 'window' => 0,
-        ]),
-        Features::passkeys([
-            'confirmPassword' => true,
-        ]),
+        // Features::updateProfileInformation(),
+        // Features::updatePasswords(),
+        // Features::twoFactorAuthentication([
+        //     'confirm' => true,
+        //     'confirmPassword' => true,
+        //     // 'window' => 0,
+        // ]),
+        // Features::passkeys([
+        //     'confirmPassword' => true,
+        // ]),
     ],
 
 ];
