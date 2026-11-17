@@ -11,6 +11,16 @@ return [
     'log_out_hint' => 'Other signed-in devices stay signed in.',
     'sessions' => 'Sessions',
     'appearance' => 'Appearance',
+    'avatar' => [
+        'heading' => 'Your avatar',
+        'emoji' => 'Emoji',
+        'emoji_hint' => 'Tap the circle and pick any emoji with the 😀 key.',
+        'invalid_emoji' => 'Pick a single emoji.',
+        'save' => 'Save avatar',
+        'use_letter' => 'Use the letter',
+        'updated' => 'Your avatar is saved.',
+        'cleared' => 'Your first letter shows again.',
+    ],
     'household' => 'Household',
     'users_hint' => 'People, invites and the household name',
     'devices' => [

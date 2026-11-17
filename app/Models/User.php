@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\Feature;
 use App\Enums\Role;
+use App\Support\Avatar;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -173,7 +174,16 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'avatar' => 'array',
         ];
+    }
+
+    /**
+     * The avatar this user picked, or null for the first letter of the name.
+     */
+    public function avatarChoice(): ?Avatar
+    {
+        return Avatar::from($this->avatar);
     }
 
     public function contextMembership(): ?ContextUser

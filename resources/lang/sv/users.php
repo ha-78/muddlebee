@@ -11,6 +11,16 @@ return [
     'log_out_hint' => 'Övriga inloggade enheter förblir inloggade.',
     'sessions' => 'Sessioner',
     'appearance' => 'Utseende',
+    'avatar' => [
+        'heading' => 'Din avatar',
+        'emoji' => 'Emoji',
+        'emoji_hint' => 'Tryck på cirkeln och välj valfritt emoji med 😀-tangenten.',
+        'invalid_emoji' => 'Välj ett enda emoji.',
+        'save' => 'Spara avatar',
+        'use_letter' => 'Använd bokstaven',
+        'updated' => 'Avataren är sparad.',
+        'cleared' => 'Nu visas din första bokstav igen.',
+    ],
     'household' => 'Hushållet',
     'users_hint' => 'Personer, inbjudningar och hushållets namn',
     'devices' => [

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcceptInviteController;
+use App\Http\Controllers\AvatarController;
 use App\Http\Controllers\BookmarkController;
 use App\Http\Controllers\ColorPaletteController;
 use App\Http\Controllers\ContextController;
@@ -84,6 +85,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/device/theme', [DeviceRememberController::class, 'updateTheme'])->name('device.theme');
 
     Route::get('/account', [UserController::class, 'account'])->name('account');
+    Route::put('/account/avatar', [AvatarController::class, 'update'])->name('account.avatar.update');
+    Route::delete('/account/avatar', [AvatarController::class, 'destroy'])->name('account.avatar.destroy');
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/invites', [InviteController::class, 'store'])->name('invites.store');
     Route::delete('/invites/{invite}', [InviteController::class, 'destroy'])

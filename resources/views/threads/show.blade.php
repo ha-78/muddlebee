@@ -57,7 +57,7 @@
             </x-ui.sheet>
         @endcanany
 
-        <x-message :author-id="$thread->user_id" :body="$thread->body" :author="$thread->user?->name" :posted-at="$thread->created_at" />
+        <x-message :author-id="$thread->user_id" :body="$thread->body" :author="$thread->user?->name" :avatar="$thread->user?->avatar" :posted-at="$thread->created_at" />
 
         <div x-ref="region">
             <x-replies :thread="$thread" />

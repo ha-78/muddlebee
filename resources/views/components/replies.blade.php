@@ -3,7 +3,7 @@
 {{-- The replies under a thread. Swapped in live by liveRegion, which reads data-archived. --}}
 <div data-archived="{{ $thread->isArchived() ? '1' : '0' }}" class="space-y-3">
     @foreach ($thread->replies as $reply)
-        <x-message :author-id="$reply->user_id" :body="$reply->body" :author="$reply->user?->name" :posted-at="$reply->created_at">
+        <x-message :author-id="$reply->user_id" :body="$reply->body" :author="$reply->user?->name" :avatar="$reply->user?->avatar" :posted-at="$reply->created_at">
             @can('delete', $reply)
                 <form method="POST" action="{{ route('replies.destroy', [$thread, $reply]) }}" onsubmit="return confirm(@js(__('threads.confirm_delete_reply')))">
                     @csrf

@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs';
 import sort from '@alpinejs/sort';
+import { avatarPicker } from './avatar-picker.js';
 import { mealPlanner } from './meal-planner.js';
 import { mealRating } from './meal-rating.js';
 import { formatPostedTimes } from './posted-at.js';
@@ -25,6 +26,7 @@ function persistDeviceTheme(theme) {
 }
 
 document.addEventListener('alpine:init', () => {
+    Alpine.data('avatarPicker', avatarPicker);
     Alpine.data('mealPlanner', mealPlanner);
     Alpine.data('mealRating', mealRating);
 

@@ -6,7 +6,7 @@
 @section('content')
     <div class="space-y-6">
         <section class="flex items-center gap-4 rounded-card border border-surface-line bg-surface p-4">
-            <span aria-hidden="true" class="grid size-13 shrink-0 place-items-center rounded-full bg-tonal text-xl font-semibold text-tonal-ink">{{ Str::upper(Str::substr($user->name, 0, 1)) }}</span>
+            <x-avatar :user="$user" size="lg" />
             <div class="min-w-0 flex-1">
                 <h2 class="truncate text-[17px] font-semibold">{{ $user->name }}</h2>
                 <p class="truncate text-[13px] text-muted">{{ $user->email }}</p>

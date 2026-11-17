@@ -1,11 +1,11 @@
-@props(['body', 'author' => null, 'authorId' => null, 'postedAt', 'relativeDate' => false])
+@props(['body', 'author' => null, 'authorId' => null, 'avatar' => null, 'postedAt', 'relativeDate' => false])
 
 {{-- A speech bubble: your own on the right in step 2, others on the left on the surface. Extra slot content (such as a delete button) sits beside it. --}}
 @php($mine = auth()->id() !== null && (int) $authorId === (int) auth()->id())
 
 <div {{ $attributes->class(['flex items-end gap-2', 'flex-row-reverse' => $mine]) }}>
     @unless ($mine)
-        <span aria-hidden="true" class="grid size-8 shrink-0 place-items-center rounded-full bg-tonal text-[13px] font-semibold text-tonal-ink">{{ Str::upper(Str::substr($author ?? '?', 0, 1)) }}</span>
+        <x-avatar :name="$author" :avatar="$avatar" size="sm" />
     @endunless
 
     <article @class([

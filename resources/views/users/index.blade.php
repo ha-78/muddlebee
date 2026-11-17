@@ -7,7 +7,7 @@
         <x-ui.group :heading="__('users.users')">
             @foreach ($users as $member)
                 <a href="{{ route('users.show', $member) }}" class="flex min-h-13 items-center gap-3 px-4 py-2 text-ink">
-                    <span aria-hidden="true" class="grid size-9 shrink-0 place-items-center rounded-full bg-tonal text-[14px] font-semibold text-tonal-ink">{{ Str::upper(Str::substr($member->name, 0, 1)) }}</span>
+                    <x-avatar :user="$member" />
                     <span class="min-w-0 flex-1">
                         <span class="flex flex-wrap items-center gap-2">
                             <span class="text-[15px] font-semibold">{{ $member->name }}</span>

@@ -2,7 +2,7 @@
 
 {{-- One thread in a list: name or opening message, the latest reply, and how many replies. --}}
 <a href="{{ route('threads.show', $thread) }}" {{ $attributes->class('flex gap-3 px-4 py-3 text-ink') }}>
-    <span aria-hidden="true" class="grid size-9 shrink-0 place-items-center rounded-full bg-tonal text-[14px] font-semibold text-tonal-ink">{{ Str::upper(Str::substr($thread->user?->name ?? '?', 0, 1)) }}</span>
+    <x-avatar :user="$thread->user" />
 
     <span class="flex min-w-0 flex-1 flex-col gap-0.5">
         <span class="flex items-start gap-2">
