@@ -1,8 +1,9 @@
 @props(['meal', 'handle' => false])
 
 {{-- One meal in a list. Opens to show the recipe link and comment; the "actions" slot holds what the user may do with it,
-     and an optional "meta" slot (such as the planned day) goes before the author. With "handle", a grip
-     on the left drags the meal (Alpine sort). --}}
+     and an optional "meta" slot (such as the planned day) goes before the author. On the wishlist the "rating"
+     slot shows the average under the name and the "rate" slot the user's own stars when opened.
+     With "handle", a grip on the left drags the meal (Alpine sort). --}}
 <div x-data="{ open: false }" {{ $attributes->class(['bg-surface']) }}>
     <div class="flex items-stretch">
     @if ($handle)
@@ -25,6 +26,9 @@
         <span class="shrink-0 text-accent"><x-icon name="utensils" size="5" /></span>
         <span class="min-w-0 flex-1">
             <span class="block text-[15px] font-semibold break-words">{{ $meal->name }}</span>
+            @isset($rating)
+                <span class="mt-0.5 block text-[13px] text-muted">{{ $rating }}</span>
+            @endisset
             <span class="block text-[13px] text-muted">
                 @isset($meta)
                     {{ $meta }}
@@ -56,6 +60,10 @@
         @unless ($meal->hasDetails())
             <p class="text-muted">{{ __('meals.no_details') }}</p>
         @endunless
+
+        @isset($rate)
+            <div class="pt-1">{{ $rate }}</div>
+        @endisset
 
         @isset($actions)
             <div class="flex flex-wrap gap-2 pt-1">{{ $actions }}</div>

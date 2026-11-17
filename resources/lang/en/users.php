@@ -70,7 +70,7 @@ return [
         'publish-lists' => 'Share lists',
         'add-items-to-shared-lists' => 'Add items to shared lists created by others',
         'add-meals-to-wishlist' => 'Add meals to the wishlist',
-        'vote-on-meals' => 'Vote on meal suggestions',
+        'rate-meals' => 'Rate meals',
         'add-meals-to-shortlist' => 'Add meals to the short list',
         'plan-meals' => 'Plan meals',
         'create-notifications' => 'Create notifications',

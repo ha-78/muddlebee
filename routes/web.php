@@ -9,6 +9,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InviteController;
 use App\Http\Controllers\ListController;
 use App\Http\Controllers\ListItemController;
+use App\Http\Controllers\MealRatingController;
 use App\Http\Controllers\MealsController;
 use App\Http\Controllers\NoticeController;
 use App\Http\Controllers\ReplyController;
@@ -59,6 +60,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/meals/{meal}/plan', [MealsController::class, 'plan'])->name('meals.plan');
     Route::delete('/meals/{meal}/plan', [MealsController::class, 'unplan'])->name('meals.unplan');
     Route::post('/meals/{meal}/again', [MealsController::class, 'again'])->name('meals.again');
+    Route::put('/meals/{meal}/rating', [MealRatingController::class, 'update'])->name('meals.rating');
+    Route::delete('/meals/{meal}/rating', [MealRatingController::class, 'destroy'])->name('meals.rating.destroy');
 
     Route::get('/notices', [NoticeController::class, 'index'])->name('notices.index');
     Route::post('/notices', [NoticeController::class, 'store'])->name('notices.store');

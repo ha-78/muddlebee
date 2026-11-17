@@ -63,6 +63,14 @@ class User extends Authenticatable
     }
 
     /**
+     * @return HasMany<MealRating, $this>
+     */
+    public function mealRatings(): HasMany
+    {
+        return $this->hasMany(MealRating::class);
+    }
+
+    /**
      * @return HasMany<Thread, $this>
      */
     public function threads(): HasMany

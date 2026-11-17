@@ -51,35 +51,32 @@
         @elseif ($meals->isEmpty())
             <p class="rounded-card border border-surface-line bg-surface px-4 py-3 text-[15px] text-muted">{{ $status->emptyMessage() }}</p>
         @else
+            @if ($status === App\Enums\MealStatus::Wishlist)
+                {{-- Nyast / Högst betyg --}}
+                <div class="flex items-center justify-end gap-1 text-[13px]" role="group" aria-label="{{ __('meals.sort') }}">
+                    @foreach ([App\Services\MealService::SORT_NEWEST => __('meals.sort_newest'), App\Services\MealService::SORT_RATING => __('meals.sort_rating')] as $value => $label)
+                        <a
+                            href="{{ route('meals.index', ['status' => 'wishlist', 'sort' => $value]) }}"
+                            @if ($sort === $value) aria-current="true" @endif
+                            @class([
+                                'inline-flex h-8 items-center rounded-full px-3',
+                                'bg-tonal font-semibold text-tonal-ink' => $sort === $value,
+                                'font-medium text-muted' => $sort !== $value,
+                            ])
+                        >{{ $label }}</a>
+                    @endforeach
+                </div>
+            @endif
+
             <x-ui.group>
                 @foreach ($meals as $meal)
-                    <x-meal :meal="$meal">
-                        @if (auth()->user()->can('update', $meal) || auth()->user()->can('move', $meal) || ($meal->status === App\Enums\MealStatus::Shortlist && auth()->user()->can('plan', $meal)))
-                            <x-slot:actions>
-                                @can('update', $meal)
-                                    <x-meals.edit-button :meal="$meal" />
-                                @endcan
-
-                                @if ($meal->status === App\Enums\MealStatus::Shortlist && auth()->user()->can('plan', $meal))
-                                    <x-meals.pick-day-button :meal="$meal" variant="primary">{{ __('meals.plan') }}</x-meals.pick-day-button>
-                                @endif
-
-                                @can('move', $meal)
-                                    @foreach ($meal->status->moveTargets() as $target)
-                                        <form method="POST" action="{{ route('meals.status', $meal) }}">
-                                            @csrf
-                                            @method('PATCH')
-                                            <input type="hidden" name="status" value="{{ $target->value }}">
-                                            <x-ui.button
-                                                type="submit"
-                                                :variant="$target === App\Enums\MealStatus::Shortlist ? 'primary' : ($target === App\Enums\MealStatus::Discarded ? 'danger' : 'tonal')"
-                                            >{{ $meal->status->moveLabel($target) }}</x-ui.button>
-                                        </form>
-                                    @endforeach
-                                @endcan
-                            </x-slot:actions>
-                        @endif
-                    </x-meal>
+                    @if ($status === App\Enums\MealStatus::Wishlist)
+                        <x-meals.rating-scope :meal="$meal">
+                            @include('meals.row', ['meal' => $meal, 'rated' => true])
+                        </x-meals.rating-scope>
+                    @else
+                        @include('meals.row', ['meal' => $meal, 'rated' => false])
+                    @endif
                 @endforeach
             </x-ui.group>
         @endif

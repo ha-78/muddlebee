@@ -43,9 +43,12 @@ class MealsController extends Controller
             ]);
         }
 
+        $sort = $request->query('sort') === MealService::SORT_RATING ? MealService::SORT_RATING : MealService::SORT_NEWEST;
+
         return view('meals.index', [
             'status' => $status,
-            'meals' => $meals->list($user, $status),
+            'sort' => $sort,
+            'meals' => $meals->list($user, $status, $sort),
         ]);
     }
 

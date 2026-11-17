@@ -70,7 +70,7 @@ return [
         'publish-lists' => 'Dela listor',
         'add-items-to-shared-lists' => 'Lägga till poster i andras delade listor',
         'add-meals-to-wishlist' => 'Lägg måltider på önskelistan',
-        'vote-on-meals' => 'Rösta på måltidsförslag',
+        'rate-meals' => 'Betygsätta måltider',
         'add-meals-to-shortlist' => 'Lägg måltider på kortlistan',
         'plan-meals' => 'Planera måltider',
         'create-notifications' => 'Skapa notiser',

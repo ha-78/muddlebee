@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Enums\MealStatus;
+use App\Services\MealRatingService;
 use Database\Factories\MealFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable(['context_id', 'user_id', 'name', 'recipe_link', 'comment', 'status', 'calendar_date_id', 'planned_at'])]
 class Meal extends Model
@@ -19,6 +21,40 @@ class Meal extends Model
     protected $attributes = [
         'status' => 'wishlist',
     ];
+
+    /**
+     * Everyone's ratings of this meal. Kept whatever the status; only the wishlist shows them.
+     *
+     * @return HasMany<MealRating, $this>
+     */
+    public function ratings(): HasMany
+    {
+        return $this->hasMany(MealRating::class);
+    }
+
+    /**
+     * The average rating as stars, rounded to the nearest half; 3 for a meal nobody has rated.
+     * Needs the wishlist query (withAvg on ratings).
+     */
+    public function averageStars(): float
+    {
+        $average = $this->ratings_avg_rating;
+
+        return MealRatingService::stars($average === null ? null : (float) $average);
+    }
+
+    public function isUnrated(): bool
+    {
+        return (int) ($this->ratings_count ?? 0) === 0;
+    }
+
+    /**
+     * The signed-in user's own rating, from the wishlist query; null when they haven't rated.
+     */
+    public function myRating(): ?int
+    {
+        return $this->my_rating === null ? null : (int) $this->my_rating;
+    }
 
     public function hasDetails(): bool
     {

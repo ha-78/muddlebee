@@ -1,6 +1,7 @@
 import Alpine from 'alpinejs';
 import sort from '@alpinejs/sort';
 import { mealPlanner } from './meal-planner.js';
+import { mealRating } from './meal-rating.js';
 import { formatPostedTimes } from './posted-at.js';
 import { applyTheme, readThemePreference } from './theme.js';
 
@@ -25,6 +26,7 @@ function persistDeviceTheme(theme) {
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('mealPlanner', mealPlanner);
+    Alpine.data('mealRating', mealRating);
 
     Alpine.data('liveRegion', () => ({
         archived: false,

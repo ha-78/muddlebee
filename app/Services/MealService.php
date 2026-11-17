@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\MealStatus;
 use App\Models\Meal;
+use App\Models\MealRating;
 use Carbon\CarbonInterface;
 use App\Models\User;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -14,19 +15,46 @@ use Illuminate\Validation\ValidationException;
 
 class MealService
 {
+    public const SORT_NEWEST = 'newest';
+
+    public const SORT_RATING = 'rating';
+
     public function __construct(private CalendarService $calendar) {}
 
     /**
      * @return Collection<int, Meal>
      */
-    public function list(User $user, MealStatus $status): Collection
+    /**
+     * The meals with one status, newest first. The wishlist also loads each meal's average rating,
+     * number of ratings and the user's own rating, and can be sorted by rating ("rating": highest
+     * first, unrated counting as 3, then most ratings, then newest). Other statuses load no ratings.
+     */
+    public function list(User $user, MealStatus $status, string $sort = self::SORT_NEWEST): Collection
     {
-        return Meal::query()
+        $query = Meal::query()
             ->with('user')
             ->forContext($user)
-            ->where('status', $status)
-            ->orderByDesc('id')
-            ->get();
+            ->where('status', $status);
+
+        if ($status === MealStatus::Wishlist) {
+            // withAvg/withCount first: they add meals.* to the select, which addSelect alone would not.
+            $query->withAvg('ratings', 'rating')
+                ->withCount('ratings')
+                ->addSelect([
+                    'my_rating' => MealRating::query()
+                        ->select('rating')
+                        ->whereColumn('meal_id', $query->qualifyColumn('id'))
+                        ->where('user_id', $user->getKey())
+                        ->limit(1),
+                ]);
+
+            if ($sort === self::SORT_RATING) {
+                $query->orderByRaw('coalesce(ratings_avg_rating, ?) desc', [MealRatingService::DEFAULT_STARS])
+                    ->orderByDesc('ratings_count');
+            }
+        }
+
+        return $query->orderByDesc($query->qualifyColumn('id'))->get();
     }
 
     public function create(User $owner, string $name, ?string $recipeLink, ?string $comment): Meal

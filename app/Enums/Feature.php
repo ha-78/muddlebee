@@ -16,7 +16,7 @@ enum Feature: string
     case AddItemsToSharedLists = 'add-items-to-shared-lists';
     case PublishBookmarks = 'publish-bookmarks';
     case AddMealsToWishlist = 'add-meals-to-wishlist';
-    case VoteOnMeals = 'vote-on-meals';
+    case RateMeals = 'rate-meals';
     case AddMealsToShortlist = 'add-meals-to-shortlist';
     case PlanMeals = 'plan-meals';
 
@@ -27,7 +27,7 @@ enum Feature: string
             self::CreateNotifications => Section::Calendar,
             self::PublishLists, self::AddItemsToSharedLists => Section::Lists,
             self::PublishBookmarks => Section::Bookmarks,
-            self::AddMealsToWishlist, self::VoteOnMeals, self::AddMealsToShortlist, self::PlanMeals => Section::Meals,
+            self::AddMealsToWishlist, self::RateMeals, self::AddMealsToShortlist, self::PlanMeals => Section::Meals,
         };
     }
 

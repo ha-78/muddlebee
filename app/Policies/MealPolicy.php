@@ -3,6 +3,7 @@
 namespace App\Policies;
 
 use App\Enums\Feature;
+use App\Enums\MealStatus;
 use App\Enums\Role;
 use App\Models\Meal;
 use App\Models\User;
@@ -47,6 +48,17 @@ class MealPolicy
         }
 
         return (int) $meal->user_id === (int) $actor->getKey() || $actor->role->atLeast(Role::Admin);
+    }
+
+    /**
+     * Rating a meal 1–5 stars, changing or removing your rating: only on the wishlist, with RateMeals.
+     */
+    public function rate(User $actor, Meal $meal): bool
+    {
+        return $actor->canWrite()
+            && $actor->allows(Feature::RateMeals)
+            && $meal->status === MealStatus::Wishlist
+            && (int) $meal->context_id === $actor->currentContextId();
     }
 
     /**
