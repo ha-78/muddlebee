@@ -13,7 +13,9 @@ use App\Http\Controllers\ListItemController;
 use App\Http\Controllers\MealRatingController;
 use App\Http\Controllers\MealsController;
 use App\Http\Controllers\NoticeController;
+use App\Http\Controllers\PasswordResetLinkController;
 use App\Http\Controllers\ReplyController;
+use App\Http\Controllers\ResetPasswordController;
 use App\Http\Controllers\ThreadController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -30,6 +32,12 @@ Route::middleware('throttle:60,1')->group(function () {
         ->where('token', '[A-Za-z0-9]{64}');
     Route::post('/invites/{token}', [AcceptInviteController::class, 'store'])
         ->name('invites.accept.store')
+        ->where('token', '[A-Za-z0-9]{64}');
+    Route::get('/password-reset/{token}', [ResetPasswordController::class, 'create'])
+        ->name('password-reset.show')
+        ->where('token', '[A-Za-z0-9]{64}');
+    Route::post('/password-reset/{token}', [ResetPasswordController::class, 'store'])
+        ->name('password-reset.store')
         ->where('token', '[A-Za-z0-9]{64}');
 });
 
@@ -96,4 +104,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
     Route::patch('/users/{user}/role', [UserController::class, 'updateRole'])->name('users.role.update');
     Route::put('/users/{user}/features', [UserController::class, 'updateFeatures'])->name('users.features.update');
+    Route::post('/users/{user}/password-reset-link', [PasswordResetLinkController::class, 'store'])->name('users.password-reset.store');
+    Route::delete('/users/{user}/password-reset-link', [PasswordResetLinkController::class, 'destroy'])->name('users.password-reset.destroy');
 });

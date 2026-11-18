@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Models\Context;
 use App\Models\Invite;
 use App\Models\User;
+use App\Services\InviteService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -25,6 +26,16 @@ class StoreInviteRequest extends FormRequest
     public function context(): ?Context
     {
         return Context::query()->orderBy('id')->first();
+    }
+
+    /**
+     * @return list<Role>
+     */
+    private function invitableRoles(): array
+    {
+        $user = $this->user();
+
+        return $user instanceof User ? app(InviteService::class)->invitableRoles($user) : [];
     }
 
     protected function prepareForValidation(): void
@@ -52,7 +63,7 @@ class StoreInviteRequest extends FormRequest
                     fn ($query) => $query->where('expires_at', '>', now()),
                 ),
             ],
-            'role' => ['required', Rule::enum(Role::class)],
+            'role' => ['required', Rule::enum(Role::class)->only($this->invitableRoles())],
         ];
     }
 

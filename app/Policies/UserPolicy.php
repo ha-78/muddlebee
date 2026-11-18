@@ -36,4 +36,21 @@ class UserPolicy
 
         return $subject->role === Role::Member;
     }
+
+    /**
+     * Admins may create a link for a new password for themselves and for members and readers.
+     * Gods may create one for anyone. An admin can't open another admin's or a god's account this way.
+     */
+    public function resetPassword(User $actor, User $subject): bool
+    {
+        if ($actor->role === Role::God) {
+            return true;
+        }
+
+        if (! $actor->role->atLeast(Role::Admin)) {
+            return false;
+        }
+
+        return $actor->is($subject) || ! $subject->role->atLeast(Role::Admin);
+    }
 }

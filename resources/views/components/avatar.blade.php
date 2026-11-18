@@ -11,7 +11,7 @@
     aria-hidden="true"
     data-avatar="{{ $choice ? 'emoji' : 'letter' }}"
     {{ $attributes->class([
-        'grid shrink-0 place-items-center rounded-full bg-tonal font-semibold text-tonal-ink select-none',
+        'grid shrink-0 place-items-center overflow-hidden rounded-full bg-tonal font-semibold text-tonal-ink select-none',
         'size-8' => $size === 'sm',
         'size-9' => $size === 'md',
         'size-13' => $size === 'lg',

@@ -72,5 +72,54 @@
                 @endif
             </section>
         @endif
+
+        @if ($canResetPassword)
+            {{-- Same pattern as invites: create a link, then copy it and send it yourself. --}}
+            <x-ui.form-card :label="__('users.password_reset.heading')" :action="route('users.password-reset.store', $user)" icon="link">
+                <p class="px-0.5 text-[13px] text-muted">{{ __('users.password_reset.hint') }}</p>
+
+                @if ($resetLink)
+                    <div class="space-y-2">
+                        <p class="px-0.5 text-[13px] text-muted">
+                            {{ __('users.password_reset.expires') }}
+                            <time datetime="{{ $resetLink->expires_at->toAtomString() }}">{{ $resetLink->expires_at->timezone(config('app.timezone'))->format('Y-m-d H:i') }}</time>
+                        </p>
+
+                        <div x-data="copyText" class="flex items-center gap-2">
+                            <input
+                                x-ref="link"
+                                type="text"
+                                readonly
+                                value="{{ $resetLink->link() }}"
+                                aria-label="{{ __('users.password_reset.link') }}"
+                                spellcheck="false"
+                                autocomplete="off"
+                                x-on:focus="$el.select()"
+                                class="h-10 w-full min-w-0 rounded-field bg-field px-3 text-base text-field-ink sm:text-[13px]"
+                            >
+                            <x-ui.button variant="tonal" class="h-10 shrink-0" x-on:click="copy($refs.link.value)">
+                                <x-icon name="link" size="4" stroke="2" />
+                                <span x-show="! copied">{{ __('users.invites.copy') }}</span>
+                                <span x-show="copied" x-cloak>{{ __('users.invites.copied') }}</span>
+                            </x-ui.button>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="flex flex-wrap items-center justify-end gap-2">
+                    @if ($resetLink)
+                        <x-ui.button variant="ghost" type="submit" form="password-reset-remove">{{ __('users.password_reset.remove') }}</x-ui.button>
+                    @endif
+                    <x-ui.button type="submit" :variant="$resetLink ? 'tonal' : 'primary'" :class="$resetLink ? '' : 'w-full'">{{ $resetLink ? __('users.password_reset.replace') : __('users.password_reset.create') }}</x-ui.button>
+                </div>
+            </x-ui.form-card>
+
+            @if ($resetLink)
+                <form id="password-reset-remove" method="POST" action="{{ route('users.password-reset.destroy', $user) }}" class="hidden">
+                    @csrf
+                    @method('DELETE')
+                </form>
+            @endif
+        @endif
     </div>
 @endsection

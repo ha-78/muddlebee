@@ -10,6 +10,7 @@ use App\Models\Context;
 use App\Models\User;
 use App\Services\DeviceRememberService;
 use App\Services\InviteService;
+use App\Services\PasswordResetLinkService;
 use App\Services\UserAccessService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,17 +52,22 @@ class UserController extends Controller
             'context' => $context,
             'users' => User::query()->with('memberships')->latest('id')->paginate(20),
             'canInvite' => $canInvite,
-            'pendingInvites' => $canInvite ? $invites->pending($context) : collect(),
-            'inviteRoles' => array_reverse(Role::cases()),
+            'pendingInvites' => $canInvite ? $invites->pending($context, $actor) : collect(),
+            'inviteRoles' => $canInvite ? $invites->invitableRoles($actor) : [],
             'defaultInviteRole' => Role::Reader,
         ]);
     }
 
-    public function show(Request $request, User $user, UserAccessService $access): View
+    public function show(Request $request, User $user, UserAccessService $access, PasswordResetLinkService $resetLinks): View
     {
         Gate::authorize('view', $user);
 
         $roles = $access->assignableRoles($request->user(), $user);
+        $canResetPassword = $request->user()->can('resetPassword', $user);
+
+        if ($canResetPassword) {
+            $resetLinks->pruneExpired();
+        }
 
         return view('users.show', [
             'user' => $user->load(['featureOverrides', 'memberships']),
@@ -71,6 +77,8 @@ class UserController extends Controller
             ),
             'canAssignFeatures' => $request->user()->can('assignFeatures', $user),
             'featureGroups' => Feature::grouped(),
+            'canResetPassword' => $canResetPassword,
+            'resetLink' => $canResetPassword ? $resetLinks->pendingFor($user) : null,
         ]);
     }
 

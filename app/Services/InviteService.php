@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Models\Context;
 use App\Models\Invite;
 use App\Models\User;
+use App\Policies\InvitePolicy;
 use Carbon\CarbonInterface;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Collection;
@@ -23,15 +24,37 @@ class InviteService
     }
 
     /**
+     * The roles this person may give in an invite, lowest first.
+     *
+     * @return list<Role>
+     */
+    public function invitableRoles(User $actor): array
+    {
+        $policy = new InvitePolicy;
+
+        return array_values(array_filter(
+            array_reverse(Role::cases()),
+            fn (Role $role): bool => $policy->mayInviteAs($actor, $role),
+        ));
+    }
+
+    /**
+     * Pending invites this person may see. An admin sees only invites for roles they may give,
+     * since the link to an admin or god invite would let them create such an account.
+     *
      * @return Collection<int, Invite>
      */
-    public function pending(?Context $context): Collection
+    public function pending(?Context $context, User $actor): Collection
     {
         if (! $context instanceof Context) {
             return new Collection;
         }
 
-        return $context->invites()->pending()->latest('id')->get();
+        return $context->invites()
+            ->pending()
+            ->whereIn('role', array_map(fn (Role $role): string => $role->value, $this->invitableRoles($actor)))
+            ->latest('id')
+            ->get();
     }
 
     public function pruneExpired(?Context $context): void
@@ -49,7 +72,9 @@ class InviteService
     public function create(User $actor, Context $context, array $data): Invite
     {
         return DB::transaction(function () use ($actor, $context, $data): Invite {
-            if (! $actor->can('create', [Invite::class, $context])) {
+            $role = Role::tryFrom((string) ($data['role'] ?? ''));
+
+            if ($role === null || ! $actor->can('create', [Invite::class, $context, $role])) {
                 throw new AuthorizationException;
             }
 
@@ -79,7 +104,7 @@ class InviteService
                 'inviter_id' => $actor->id,
                 'name' => $name,
                 'email' => $email,
-                'role' => Role::from((string) ($data['role'] ?? '')),
+                'role' => $role,
                 'token_hash' => $this->hashToken($plainToken),
                 'token' => $plainToken,
                 'expires_at' => $this->expiresAt(),

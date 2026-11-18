@@ -43,8 +43,23 @@ final readonly class Avatar
             return false;
         }
 
-        return preg_match('/^\X\z/u', $value) === 1
+        return self::graphemeCount($value) === 1
             && preg_match('/[\p{Extended_Pictographic}\x{1F1E6}-\x{1F1FF}\x{20E3}]/u', $value) === 1;
+    }
+
+    /**
+     * Characters as people see them. intl (ICU) counts like browsers do; PCRE's \X is only a fallback,
+     * since some PCRE versions join emoji that stand side by side into one.
+     */
+    private static function graphemeCount(string $value): int
+    {
+        if (function_exists('grapheme_strlen')) {
+            $count = grapheme_strlen($value);
+
+            return is_int($count) ? $count : 0;
+        }
+
+        return (int) preg_match_all('/\X/u', $value);
     }
 
     /**

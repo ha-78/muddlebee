@@ -78,13 +78,15 @@
                                 </p>
                             </div>
 
-                            <form method="POST" action="{{ route('invites.destroy', $invite) }}">
-                                @csrf
-                                @method('DELETE')
-                                <x-ui.button type="submit" variant="ghost" icon :aria-label="__('users.invites.remove')">
-                                    <span class="text-muted"><x-icon name="trash" size="5" /></span>
-                                </x-ui.button>
-                            </form>
+                            @can('delete', $invite)
+                                <form method="POST" action="{{ route('invites.destroy', $invite) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <x-ui.button type="submit" variant="ghost" icon :aria-label="__('users.invites.remove')">
+                                        <span class="text-muted"><x-icon name="trash" size="5" /></span>
+                                    </x-ui.button>
+                                </form>
+                            @endcan
                         </div>
 
                         <div x-data="copyText" class="flex items-center gap-2 pr-2.5">

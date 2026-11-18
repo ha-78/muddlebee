@@ -199,7 +199,7 @@ it('shows each person their account, and the user list only to an admin', functi
         ->assertSee(__('users.context'))
         ->assertSee(__('users.manage'))
         ->assertDontSee(__('users.log_out'))
-        ->assertDontSee(__('users.invites.heading'))
+        ->assertSee(__('users.invites.heading'))
         ->assertSee('href="'.route('users.show', $reader).'"', false)
         ->assertDontSee('var(--color-', false);
 

@@ -9,5 +9,5 @@ return [
     'lists_body' => 'Lists are for things to get that are not food, such as clothes or things for the house. Check an item off when it is done. A list can be private or shared, and Manage lists is where it is changed or archived.',
     'bookmarks_body' => 'Bookmarks keep links with a name. Save a link for yourself, or share it so the rest of the household can open it. Shared and private bookmarks are listed separately.',
     'meals_body' => 'Meals gathers the household\'s food ideas. Add a meal to the wishlist, give it stars and move the favourites to the shortlist. Planned puts them on the coming days, and they then show on the start page.',
-    'account_body' => 'Your account is where you pick a theme and an avatar, and see which devices are signed in. The people who look after the household invite others and choose what each person may do.',
+    'account_body' => 'Your account is where you pick a theme and an avatar, and see which devices are signed in. The people who look after the household invite others, choose what each person may do and can create a link for a new password.',
 ];

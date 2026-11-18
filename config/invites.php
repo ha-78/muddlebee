@@ -14,4 +14,16 @@ return [
 
     'lifetime_days' => 7,
 
+    /*
+    |--------------------------------------------------------------------------
+    | Password reset link lifetime
+    |--------------------------------------------------------------------------
+    |
+    | How long a link for choosing a new password works after an admin creates
+    | it. Shorter than an invite, since it opens an existing account.
+    |
+    */
+
+    'password_reset_lifetime_hours' => 24,
+
 ];

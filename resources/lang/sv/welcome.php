@@ -9,5 +9,5 @@ return [
     'lists_body' => 'Listor är till för sådant som ska skaffas och inte är mat, som kläder eller saker till hemmet. Bocka av en post när den är klar. En lista kan vara privat eller delad, och under Hantera listor kan den ändras eller arkiveras.',
     'bookmarks_body' => 'Bokmärken samlar länkar med ett namn. Spara en länk för dig själv, eller dela den så att resten av hushållet kan öppna den. Delade och privata bokmärken visas var för sig.',
     'meals_body' => 'Måltider samlar hushållets matidéer. Lägg till en måltid på önskelistan, ge den stjärnor och flytta favoriterna till kortlistan. Under Planerat lägger du dem på de kommande dagarna, och de syns sedan på startsidan.',
-    'account_body' => 'På ditt konto väljer du tema och avatar, och ser vilka enheter som är inloggade. De som sköter hushållet bjuder in andra och väljer vad var och en får göra.',
+    'account_body' => 'På ditt konto väljer du tema och avatar, och ser vilka enheter som är inloggade. De som sköter hushållet bjuder in andra, väljer vad var och en får göra och kan skapa en länk för nytt lösenord.',
 ];

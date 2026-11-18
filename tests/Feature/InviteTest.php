@@ -10,9 +10,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
-it('shows invite links only to a god', function () {
+it('shows invite links to gods and admins', function () {
     $god = User::factory()->withRole(Role::God)->create();
     $admin = User::factory()->withRole(Role::Admin)->create();
+    $member = User::factory()->withRole(Role::Member)->create();
 
     $this->actingAs($god)
         ->get(route('users.index'))
@@ -30,8 +31,14 @@ it('shows invite links only to a god', function () {
     $this->actingAs($admin)
         ->get(route('users.index'))
         ->assertSuccessful()
-        ->assertDontSee(__('users.invites.heading'))
-        ->assertDontSee(__('users.invites.empty'));
+        ->assertSee(__('users.invites.heading'))
+        ->assertSee('<option value="'.Role::Member->value.'"', false)
+        ->assertDontSee('<option value="'.Role::Admin->value.'"', false)
+        ->assertDontSee('<option value="'.Role::God->value.'"', false);
+
+    $this->actingAs($member)
+        ->get(route('users.index'))
+        ->assertForbidden();
 });
 
 it('creates a week-long invite link for the context', function (Role $role) {
@@ -80,10 +87,16 @@ it('creates a week-long invite link for the context', function (Role $role) {
         ->assertSuccessful()
         ->assertSee($invite->link(), false);
 
-    $this->actingAs(User::factory()->withRole(Role::Admin)->create())
+    // Admins see invites for members and readers, but never the link to an admin or god invite.
+    $adminView = $this->actingAs(User::factory()->withRole(Role::Admin)->create())
         ->get(route('users.index'))
-        ->assertDontSee($invite->link(), false)
-        ->assertDontSee('ada@example.com');
+        ->assertSuccessful();
+
+    if ($role->atLeast(Role::Admin)) {
+        $adminView->assertDontSee($invite->link(), false)->assertDontSee('ada@example.com');
+    } else {
+        $adminView->assertSee($invite->link(), false)->assertSee('ada@example.com');
+    }
 })->with([
     'reader' => Role::Reader,
     'member' => Role::Member,
@@ -165,8 +178,8 @@ it('lets a god invite the same email again after the previous link expired', fun
     expect($invite->expires_at->isFuture())->toBeTrue();
 });
 
-it('stops anyone except a god from creating or opening the invite form', function () {
-    $admin = User::factory()->withRole(Role::Admin)->create();
+it('stops members and readers from inviting', function () {
+    $member = User::factory()->withRole(Role::Member)->create();
     $reader = User::factory()->withRole(Role::Reader)->create();
     $payload = [
         'name' => 'Ny',
@@ -175,13 +188,36 @@ it('stops anyone except a god from creating or opening the invite form', functio
     ];
 
     $this->post(route('invites.store'), $payload)->assertRedirect(route('login'));
-    $this->actingAs($admin)->post(route('invites.store'), $payload)->assertForbidden();
+    $this->actingAs($member)->post(route('invites.store'), $payload)->assertForbidden();
     $this->actingAs($reader)->post(route('invites.store'), $payload)->assertForbidden();
 
     expect(Invite::query()->exists())->toBeFalse();
 });
 
-it('lets a god remove a pending invite from the context', function () {
+it('lets admins invite members and readers, but not admins or gods', function () {
+    $admin = User::factory()->withRole(Role::Admin)->create();
+
+    $this->actingAs($admin)
+        ->post(route('invites.store'), ['name' => 'Ny', 'email' => 'ny@example.com', 'role' => Role::Member->value])
+        ->assertRedirect(route('users.index'))
+        ->assertSessionHas('status', __('users.invites.created'));
+
+    expect(Invite::query()->sole()->inviter_id)->toBe($admin->id);
+
+    foreach ([Role::Admin, Role::God] as $role) {
+        $this->actingAs($admin)
+            ->from(route('users.index'))
+            ->post(route('invites.store'), ['name' => 'Chef', 'email' => $role->value.'@example.com', 'role' => $role->value])
+            ->assertRedirect(route('users.index'));
+    }
+
+    $this->get(route('users.index'))
+        ->assertViewHas('errors', fn ($errors): bool => $errors->has('role'));
+
+    expect(Invite::query()->count())->toBe(1);
+});
+
+it('lets gods remove pending invites, and admins those for members and readers', function () {
     $god = User::factory()->withRole(Role::God)->create();
     $otherGod = User::factory()->withRole(Role::God)->create();
     $admin = User::factory()->withRole(Role::Admin)->create();
@@ -203,8 +239,14 @@ it('lets a god remove a pending invite from the context', function () {
 
     $this->delete(route('invites.destroy', $invite))->assertRedirect(route('login'));
 
+    $adminInvite = Invite::factory()->create([
+        'context_id' => $invite->context_id,
+        'inviter_id' => $god->id,
+        'role' => Role::Admin,
+    ]);
+
     $this->actingAs($admin)
-        ->delete(route('invites.destroy', $invite))
+        ->delete(route('invites.destroy', $adminInvite))
         ->assertForbidden();
 
     $this->actingAs($god)
@@ -221,6 +263,19 @@ it('lets a god remove a pending invite from the context', function () {
 
     $this->assertModelMissing($invite);
     $this->assertModelExists($foreign);
+    $this->assertModelExists($adminInvite);
+
+    $memberInvite = Invite::factory()->create([
+        'context_id' => $invite->context_id,
+        'inviter_id' => $god->id,
+        'role' => Role::Member,
+    ]);
+
+    $this->actingAs($admin)
+        ->delete(route('invites.destroy', $memberInvite))
+        ->assertRedirect(route('users.index'));
+
+    $this->assertModelMissing($memberInvite);
 });
 
 it('lets the invited person choose a password and stay signed in on the device', function () {
