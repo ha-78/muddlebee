@@ -50,6 +50,23 @@ it('summarises a rated and an unrated meal', function () {
         ->assertSee('gap-px opacity-45', false);
 });
 
+it('makes the count bold when you have rated the meal yourself', function () {
+    $user = User::factory()->create();
+    $mine = Meal::factory()->create(['name' => 'Tacos']);
+    $others = Meal::factory()->create(['name' => 'Soppa']);
+    MealRating::factory()->for($mine)->for($user)->create(['rating' => 4]);
+    MealRating::factory()->for($others)->create(['rating' => 5]);
+
+    $this->actingAs($user);
+
+    $this->blade('<x-meals.rating-summary :meal="$meal" />', ['meal' => wishlistMeal($user, 'Tacos')])
+        ->assertSee('class="font-semibold"', false)
+        ->assertSee("x-bind:class=\"{ 'font-semibold': rating !== null }\"", false);
+
+    $this->blade('<x-meals.rating-summary :meal="$meal" />', ['meal' => wishlistMeal($user, 'Soppa')])
+        ->assertDontSee('class="font-semibold"', false);
+});
+
 it('offers five stars to pick, the own rating checked, and Ta bort mitt betyg', function () {
     $user = User::factory()->withFeatures(Feature::RateMeals)->create();
     $meal = Meal::factory()->create(['name' => 'Tacos']);
