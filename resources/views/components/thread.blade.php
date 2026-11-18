@@ -1,6 +1,7 @@
 @props(['thread'])
 
-{{-- One thread in a list: name or opening message, the latest reply, and how many replies. --}}
+{{-- One thread in a list: name or opening message, the latest reply, and how many replies.
+     Who started it, and when, sits at the bottom right, but only until someone replies. --}}
 <a href="{{ route('threads.show', $thread) }}" {{ $attributes->class('flex gap-3 px-4 py-3 text-ink') }}>
     <x-avatar :user="$thread->user" />
 
@@ -29,12 +30,12 @@
                 </span>
                 <time class="shrink-0 text-[12px]" datetime="{{ $thread->replies->last()->created_at->toAtomString() }}" data-posted data-relative>{{ \App\Support\RelativeDate::label($thread->replies->last()->created_at) }}</time>
             </span>
+        @else
+            <span class="self-end text-right text-[12px] text-muted">
+                <x-author-name :author-id="$thread->user_id" :name="$thread->user?->name" />
+                <span aria-hidden="true"> · </span>
+                <time datetime="{{ $thread->created_at->toAtomString() }}" data-posted data-relative>{{ \App\Support\RelativeDate::label($thread->created_at) }}</time>
+            </span>
         @endif
-
-        <span class="text-[12px] text-muted">
-            <x-author-name :author-id="$thread->user_id" :name="$thread->user?->name" />
-            <span aria-hidden="true"> · </span>
-            <time datetime="{{ $thread->created_at->toAtomString() }}" data-posted data-relative>{{ \App\Support\RelativeDate::label($thread->created_at) }}</time>
-        </span>
     </span>
 </a>

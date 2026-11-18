@@ -68,13 +68,17 @@ it('asks guests to log in before a thread', function () {
         ->assertUnauthorized();
 });
 
-it('shows thread dates as today, yesterday, or days ago', function () {
+it('shows thread dates as today, yesterday, or days ago, and the start date only until someone replies', function () {
     $reader = User::factory()->create();
     $thread = Thread::factory()->create([
         'body' => 'Gammal tråd',
         'created_at' => now()->subDays(5),
     ]);
-    Reply::factory()->for($thread)->create([
+    $answered = Thread::factory()->create([
+        'body' => 'Besvarad tråd',
+        'created_at' => now()->subDays(8),
+    ]);
+    Reply::factory()->for($answered)->create([
         'body' => 'Gårdagens svar',
         'created_at' => now()->subDay(),
     ]);
@@ -86,6 +90,7 @@ it('shows thread dates as today, yesterday, or days ago', function () {
         ->assertSuccessful()
         ->assertSee(__('threads.yesterday'))
         ->assertSee($daysAgo)
+        ->assertDontSee(trans_choice('threads.days_ago', 8, ['count' => 8]))
         ->assertDontSee($postedAt)
         ->assertSee('data-relative', false)
         ->assertSee('data-posted-today="'.__('threads.today').'"', false)
@@ -324,8 +329,10 @@ it('shows the current user as Me on their thread and replies', function () {
     $user = User::factory()->create(['name' => 'Hanna']);
     $other = User::factory()->create(['name' => 'Nils']);
     $thread = Thread::factory()->for($user)->create(['body' => 'Min tråd']);
-    Reply::factory()->for($thread)->for($user)->create(['body' => 'Mitt svar']);
-    Reply::factory()->for($thread)->for($other)->create(['body' => 'Någon annans svar']);
+    Reply::factory()->for($thread)->for($other)->create(['body' => 'Någon annans svar', 'created_at' => now()->subMinutes(2)]);
+    Reply::factory()->for($thread)->for($user)->create(['body' => 'Mitt svar', 'created_at' => now()->subMinute()]);
+    // In the list, a thread with replies shows its latest reply (Hanna's), and an unanswered one its starter (Nils).
+    Thread::factory()->for($other)->create(['body' => 'Nils tråd']);
 
     $this->actingAs($user)
         ->get(route('threads.show', $thread))
