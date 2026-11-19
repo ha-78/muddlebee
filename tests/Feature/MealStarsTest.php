@@ -132,17 +132,16 @@ it('offers Nyast and Högst betyg on the wishlist and keeps the tab', function (
         ->assertSee('aria-current="true"', false);
 });
 
-it('shows no ratings on the other tabs', function () {
+it('shows no ratings on the shortlist', function () {
     $rater = User::factory()->withFeatures(Feature::RateMeals, Feature::AddMealsToShortlist)->create();
     $meal = Meal::factory()->create(['name' => 'Kortad', 'status' => MealStatus::Shortlist]);
     MealRating::factory()->for($meal)->create(['rating' => 5]);
 
     $this->actingAs($rater)
-        ->get(route('meals.index', ['status' => 'shortlist']))
+        ->get(route('meals.index'))
         ->assertSuccessful()
         ->assertSee('Kortad')
         ->assertDontSee('x-data="mealRating"', false)
         ->assertDontSee(trans_choice('meals.rating_count', 1, ['count' => 1]))
-        ->assertDontSee(__('meals.rating_none'))
-        ->assertDontSee(__('meals.sort_rating'));
+        ->assertDontSee(__('meals.rating_none'));
 });

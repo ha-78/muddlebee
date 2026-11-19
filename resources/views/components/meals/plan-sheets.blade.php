@@ -19,7 +19,7 @@
 
                 @if ($shortlist->isEmpty())
                     <p class="rounded-card border border-surface-line bg-surface px-4 py-3 text-[15px] text-muted">{{ __('meals.shortlist_empty') }}</p>
-                    <a href="{{ route('meals.index', ['status' => 'shortlist']) }}" class="inline-flex h-11 w-full items-center justify-center rounded-field bg-tonal px-4 text-[15px] font-semibold text-tonal-ink">{{ __('meals.to_shortlist') }}</a>
+                    <a href="{{ route('meals.index') }}" class="inline-flex h-11 w-full items-center justify-center rounded-field bg-tonal px-4 text-[15px] font-semibold text-tonal-ink">{{ __('meals.to_shortlist') }}</a>
                 @else
                     <div class="divide-y divide-surface-line overflow-hidden rounded-card border border-surface-line bg-surface">
                         @foreach ($shortlist as $meal)

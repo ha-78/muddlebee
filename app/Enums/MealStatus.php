@@ -16,12 +16,21 @@ enum MealStatus: string
 
     /**
      * The statuses that have a tab on the meals page, in order.
+     * The shortlist has no tab of its own; it is shown at the top of the wishlist tab.
      *
      * @return list<self>
      */
     public static function tabs(): array
     {
-        return [self::Wishlist, self::Shortlist, self::Planned, self::Discarded];
+        return [self::Wishlist, self::Planned, self::Discarded];
+    }
+
+    /**
+     * The tab a meal with this status is shown on.
+     */
+    public function tab(): self
+    {
+        return $this === self::Shortlist ? self::Wishlist : $this;
     }
 
     /**

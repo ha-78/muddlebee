@@ -49,6 +49,7 @@ class MealsController extends Controller
             'status' => $status,
             'sort' => $sort,
             'meals' => $meals->list($user, $status, $sort),
+            'shortlist' => $status === MealStatus::Wishlist ? $meals->list($user, MealStatus::Shortlist) : collect(),
         ]);
     }
 
@@ -106,7 +107,7 @@ class MealsController extends Controller
             $request->validated('comment'),
         );
 
-        return back(fallback: route('meals.index', ['status' => $meal->status->value]))
+        return back(fallback: route('meals.index', ['status' => $meal->status->tab()->value]))
             ->with('status', __('meals.updated'));
     }
 
@@ -117,7 +118,7 @@ class MealsController extends Controller
 
         $meals->moveTo($request->user(), $meal, $target);
 
-        return to_route('meals.index', ['status' => $from->value])
+        return to_route('meals.index', ['status' => $from->tab()->value])
             ->with('status', __('meals.moved.'.$target->value, ['name' => $meal->name]));
     }
 }

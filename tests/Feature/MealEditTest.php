@@ -28,7 +28,7 @@ it('lets the one who added a meal change its name, link and comment', function (
     ]);
 
     $this->actingAs($author)
-        ->from(route('meals.index', ['status' => 'shortlist']))
+        ->from(route('meals.index'))
         ->patch(route('meals.update', $meal), [
             'form' => 'edit-meal',
             'meal_id' => $meal->id,
@@ -36,7 +36,7 @@ it('lets the one who added a meal change its name, link and comment', function (
             'recipe_link' => 'https://example.com/ny',
             'comment' => '',
         ])
-        ->assertRedirect(route('meals.index', ['status' => 'shortlist']))
+        ->assertRedirect(route('meals.index'))
         ->assertSessionHas('status', __('meals.updated'));
 
     $meal->refresh();
