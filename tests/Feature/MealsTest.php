@@ -27,11 +27,11 @@ it('shows the meals page with tabs and the wish card in the meals color', functi
         ->assertSee('M13 .5c0-.276-.226-.506-.498-.465', false)
         ->assertSeeInOrder([
             __('meals.tabs.wishlist'),
-            __('meals.tabs.shortlist'),
             __('meals.tabs.planned'),
             __('meals.tabs.discarded'),
         ])
-        ->assertSee('href="'.route('meals.index', ['status' => 'shortlist']).'"', false)
+        ->assertDontSee('href="'.route('meals.index', ['status' => 'shortlist']).'"', false)
+        ->assertDontSee(__('meals.tabs.shortlist'))
         ->assertSee('aria-current="page"', false)
         ->assertSee(__('meals.new_wish'))
         ->assertSee('placeholder="'.__('meals.prompt').'"', false)
@@ -81,27 +81,33 @@ it('lists wishlist meals newest first as rows that open', function () {
         ->assertSee(__('meals.no_details'))
         ->assertSee($createdAt->toDateString())
         ->assertSee('Ada')
-        ->assertDontSee('Soppa')
+        ->assertSee('Soppa')
+        ->assertSeeInOrder([__('meals.tabs.shortlist'), 'Soppa', __('meals.tabs.wishlist'), 'Tacos', 'Pasta'])
         ->assertDontSee(__('meals.empty_by_status.wishlist'));
 
-    expect($response->getContent())->toMatch('/Tacos.*Pasta/s');
+    expect($response->getContent())->toMatch('/Soppa.*Tacos.*Pasta/s');
 });
 
-it('shows each status on its own tab without the wish card', function () {
+it('shows the shortlist at the top of the wishlist tab and the other statuses on their own tabs', function () {
     $user = User::factory()->withFeatures(Feature::AddMealsToWishlist)->create();
     Meal::factory()->for($user)->create(['name' => 'Önskad', 'status' => MealStatus::Wishlist]);
     Meal::factory()->for($user)->create(['name' => 'Kortad', 'status' => MealStatus::Shortlist]);
     Meal::factory()->for($user)->create(['name' => 'Slängd soppa', 'status' => MealStatus::Discarded]);
 
-    $shortlist = $this->actingAs($user)
+    // Old links to the shortlist tab land on the wishlist tab, which shows the shortlist first.
+    $wishlist = $this->actingAs($user)
         ->get(route('meals.index', ['status' => 'shortlist']))
         ->assertSuccessful()
-        ->assertSee('Kortad')
-        ->assertDontSee('Önskad')
-        ->assertDontSee('action="'.route('meals.store').'"', false);
+        ->assertSeeInOrder(['Kortad', 'action="'.route('meals.store').'"', 'Önskad'], false)
+        ->assertDontSee('Slängd soppa');
 
-    expect($shortlist->getContent())
-        ->toMatch('/href="'.preg_quote(route('meals.index', ['status' => 'shortlist']), '/').'"\\s+aria-current="page"/');
+    expect($wishlist->getContent())
+        ->toMatch('/href="'.preg_quote(route('meals.index', ['status' => 'wishlist']), '/').'"\\s+aria-current="page"/');
+
+    $this->actingAs($user)
+        ->get(route('meals.index'))
+        ->assertSuccessful()
+        ->assertSeeInOrder([__('meals.tabs.shortlist'), 'Kortad', __('meals.tabs.wishlist'), 'Önskad']);
 
     $this->actingAs($user)
         ->get(route('meals.index', ['status' => 'planned']))
@@ -247,7 +253,7 @@ it('moves a meal between the wishlist, the shortlist and discarded', function ()
 
         $this->actingAs($user)
             ->patch(route('meals.status', $meal), ['status' => $to->value])
-            ->assertRedirect(route('meals.index', ['status' => $from->value]))
+            ->assertRedirect(route('meals.index', ['status' => $from->tab()->value]))
             ->assertSessionHas('status', __('meals.moved.'.$to->value, ['name' => 'Lasagne']));
 
         expect($meal->fresh()->status)->toBe($to);

@@ -19,10 +19,17 @@
             <x-meals.edit-sheet />
         @endif
 
-        @if ($status === App\Enums\MealStatus::Shortlist)
+        @if ($status === App\Enums\MealStatus::Wishlist && $shortlist->isNotEmpty())
             @can('plan', App\Models\Meal::class)
                 <x-meals.plan-sheets />
             @endcan
+
+            {{-- The shortlist has no tab of its own: it sits at the top of the wishlist tab. --}}
+            <x-ui.group :heading="__('meals.tabs.shortlist')">
+                @foreach ($shortlist as $meal)
+                    @include('meals.row', ['meal' => $meal, 'rated' => false])
+                @endforeach
+            </x-ui.group>
         @endif
 
         @if ($status === App\Enums\MealStatus::Wishlist)
@@ -68,7 +75,7 @@
                 </div>
             @endif
 
-            <x-ui.group>
+            <x-ui.group :heading="$status === App\Enums\MealStatus::Wishlist && $shortlist->isNotEmpty() ? __('meals.tabs.wishlist') : null">
                 @foreach ($meals as $meal)
                     @if ($status === App\Enums\MealStatus::Wishlist)
                         <x-meals.rating-scope :meal="$meal">

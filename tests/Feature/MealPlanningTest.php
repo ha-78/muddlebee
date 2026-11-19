@@ -230,19 +230,21 @@ it('shows the planner read-only to those who may not plan', function () {
         ->assertDontSee(__('meals.pick_meal'));
 });
 
-it('offers planning on the shortlist tab', function () {
+it('offers planning for the shortlist on the wishlist tab', function () {
     $planner = User::factory()->withFeatures(Feature::PlanMeals)->create();
     Meal::factory()->for($planner)->create(['name' => 'Kortad pasta', 'status' => MealStatus::Shortlist]);
 
     $this->actingAs($planner)
-        ->get(route('meals.index', ['status' => 'shortlist']))
+        ->get(route('meals.index'))
         ->assertSuccessful()
+        ->assertSee('Kortad pasta')
         ->assertSee(__('meals.plan'))
         ->assertSee(__('meals.pick_day'));
 
     $this->actingAs(User::factory()->create())
-        ->get(route('meals.index', ['status' => 'shortlist']))
+        ->get(route('meals.index'))
         ->assertSuccessful()
+        ->assertSee('Kortad pasta')
         ->assertDontSee(__('meals.pick_day'));
 });
 
