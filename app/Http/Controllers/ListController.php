@@ -23,11 +23,16 @@ class ListController extends Controller
         Gate::authorize('viewAny', ListItem::class);
 
         $user = $request->user();
-        $visible = $lists->forUserWithItems($user);
+
+        // Shared lists first, then private ones, each by name. The page shows them as two rows of chips.
+        [$publicLists, $privateLists] = $lists->forUserWithItems($user)
+            ->partition(fn (ItemList $list): bool => (bool) $list->is_public);
+        $visible = $publicLists->concat($privateLists)->values();
         $selected = $visible->firstWhere('id', $request->integer('list')) ?? $visible->first();
 
         return view('lists.index', [
             'lists' => $visible,
+            'chipRows' => array_values(array_filter([$publicLists->values(), $privateLists->values()], fn ($row) => $row->isNotEmpty())),
             'selected' => $selected?->id,
             'publicListIds' => $visible->where('is_public', true)->pluck('id')->values()->all(),
             'ownListIds' => $visible->filter(fn (ItemList $list): bool => (int) $list->user_id === (int) $user->getKey())->pluck('id')->values()->all(),
@@ -74,13 +79,14 @@ class ListController extends Controller
 
     public function store(StoreListRequest $request, ListService $lists): RedirectResponse
     {
-        $lists->create(
+        $list = $lists->create(
             $request->user(),
             $request->validated('name'),
             (bool) $request->validated('is_public'),
         );
 
-        return to_route('lists.edit')->with('status', __('lists.created'));
+        // Straight to the new list, ready for its first item.
+        return to_route('lists.index', ['list' => $list->id])->with('status', __('lists.created'));
     }
 
     public function update(UpdateListRequest $request, ItemList $list, ListService $lists): RedirectResponse

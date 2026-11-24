@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 #[Fillable(['context_id', 'user_id', 'name', 'is_public', 'archived_at'])]
 class ItemList extends Model
@@ -65,6 +66,19 @@ class ItemList extends Model
     {
         // chaperone(): each item knows its list without another query (policies and the edit sheet use it).
         return $this->hasMany(ListItem::class, 'list_id')->chaperone('itemList');
+    }
+
+    /**
+     * The name as shown in a list chip: names longer than 15 characters become the first 12 and "...".
+     */
+    public function chipName(): string
+    {
+        return mb_strlen($this->name) > 15 ? Str::limit($this->name, 12, '...') : $this->name;
+    }
+
+    public function isChipNameShortened(): bool
+    {
+        return $this->chipName() !== $this->name;
     }
 
     public function hasEstimatedItem(): bool

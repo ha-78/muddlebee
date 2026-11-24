@@ -15,16 +15,22 @@
         @endif
 
         <div x-data="{ current: {{ (int) old('list_id', $selected) }}, publicLists: @json($publicListIds), ownLists: @json($ownListIds), addableLists: @json($addableListIds) }" class="space-y-4">
-            <div role="group" aria-label="{{ __('lists.lists') }}" class="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1">
-                @foreach ($lists as $list)
-                    <x-ui.chip
-                        :selected="$list->id === $selected"
-                        :when="'current === '.$list->id"
-                        x-on:click="current = {{ $list->id }}; history.replaceState(null, '', '?list={{ $list->id }}')"
-                    >
-                        {{ $list->name }}
-                        <span class="text-xs tabular-nums opacity-75">{{ $list->items->count() }}</span>
-                    </x-ui.chip>
+            {{-- Shared lists on the first row, private ones on the second; each row scrolls sideways. --}}
+            <div role="group" aria-label="{{ __('lists.lists') }}" class="space-y-1.5">
+                @foreach ($chipRows as $row)
+                    <div data-chip-row class="-mx-4 flex gap-1.5 overflow-x-auto px-4 pb-1">
+                        @foreach ($row as $list)
+                            <x-ui.chip
+                                :selected="$list->id === $selected"
+                                :when="'current === '.$list->id"
+                                x-on:click="current = {{ $list->id }}; history.replaceState(null, '', '?list={{ $list->id }}')"
+                                :title="$list->isChipNameShortened() ? $list->name : null"
+                            >
+                                {{ $list->chipName() }}
+                                <span class="text-xs tabular-nums opacity-75">{{ $list->items->count() }}</span>
+                            </x-ui.chip>
+                        @endforeach
+                    </div>
                 @endforeach
             </div>
 

@@ -179,7 +179,7 @@ it('saves a private list for a member', function () {
         ->post(route('lists.store'), [
             'name' => 'Kläder',
         ])
-        ->assertRedirect(route('lists.edit'));
+        ->assertRedirect(route('lists.index', ['list' => ItemList::query()->sole()->id]));
 
     expect(ItemList::query()->sole()->is_public)->toBeFalse();
 });
@@ -191,7 +191,7 @@ it('saves a private list for the signed-in admin', function () {
         ->post(route('lists.store'), [
             'name' => ' Kläder ',
         ])
-        ->assertRedirect(route('lists.edit'))
+        ->assertRedirect(route('lists.index', ['list' => ItemList::query()->sole()->id]))
         ->assertSessionHas('status', __('lists.created'));
 
     $list = ItemList::query()->sole();
@@ -201,11 +201,14 @@ it('saves a private list for the signed-in admin', function () {
         ->and($list->user_id)->toBe($user->id)
         ->and($list->context_id)->toBe($user->currentContextId());
 
-    $this->actingAs($user)
-        ->get(route('lists.edit'))
+    // The new list is open on the lists page, with the message.
+    $content = $this->actingAs($user)
+        ->get(route('lists.index', ['list' => $list->id]))
         ->assertSuccessful()
-        ->assertSee('Kläder')
-        ->assertSee(__('lists.created'));
+        ->assertSee(__('lists.created'))
+        ->getContent();
+
+    expect($content)->toMatch('/aria-pressed="true"[^>]*>\\s*Kläder/s');
 });
 
 it('saves a public list when asked', function () {
@@ -216,7 +219,7 @@ it('saves a public list when asked', function () {
             'name' => 'Möbler',
             'is_public' => '1',
         ])
-        ->assertRedirect(route('lists.edit'));
+        ->assertRedirect(route('lists.index', ['list' => ItemList::query()->sole()->id]));
 
     expect(ItemList::query()->sole()->is_public)->toBeTrue();
 });
@@ -248,7 +251,7 @@ it('lets a member with the grant publish a list', function () {
             'name' => 'Möbler',
             'is_public' => '1',
         ])
-        ->assertRedirect(route('lists.edit'));
+        ->assertRedirect(route('lists.index', ['list' => ItemList::query()->sole()->id]));
 
     expect(ItemList::query()->sole()->is_public)->toBeTrue();
 });
@@ -315,3 +318,59 @@ it('refuses to delete a list outside this context or below admin', function () {
     expect(ItemList::query()->find($list->id))->not->toBeNull()
         ->and(ItemList::query()->find($other->id))->not->toBeNull();
 });
+
+it('shows shared lists on the first row of chips and private lists on the second', function () {
+    $owner = User::factory()->create();
+    ItemList::factory()->for($owner)->create(['name' => 'Att köpa', 'is_public' => false, 'context_id' => $owner->currentContextId()]);
+    ItemList::factory()->for($owner)->create(['name' => 'Hemmet', 'is_public' => true, 'context_id' => $owner->currentContextId()]);
+    ItemList::factory()->for($owner)->create(['name' => 'Kläder', 'is_public' => true, 'context_id' => $owner->currentContextId()]);
+
+    $content = $this->actingAs($owner)
+        ->get(route('lists.index'))
+        ->assertSuccessful()
+        ->getContent();
+
+    preg_match_all('/<div data-chip-row.*?<\/div>/s', $content, $rows);
+
+    expect($rows[0])->toHaveCount(2)
+        ->and($rows[0][0])->toContain('Hemmet')->toContain('Kläder')->not->toContain('Att köpa')
+        ->and($rows[0][1])->toContain('Att köpa')->not->toContain('Hemmet')
+        ->and($content)->toMatch('/Hemmet.*Kläder.*Att köpa/s')
+        // The first shared list is open by default.
+        ->and($content)->toMatch('/aria-pressed="true"[^>]*>\s*Hemmet/s');
+});
+
+it('shows a single row of chips when there are only shared lists', function () {
+    $owner = User::factory()->create();
+    ItemList::factory()->for($owner)->create(['name' => 'Hemmet', 'is_public' => true, 'context_id' => $owner->currentContextId()]);
+
+    $content = $this->actingAs($owner)
+        ->get(route('lists.index'))
+        ->assertSuccessful()
+        ->getContent();
+
+    expect(substr_count($content, 'data-chip-row'))->toBe(1);
+});
+
+it('shortens long list names in the chips but not in the heading', function () {
+    $owner = User::factory()->create();
+    ItemList::factory()->for($owner)->create(['name' => 'Sommarstugans saker', 'is_public' => true, 'context_id' => $owner->currentContextId()]);
+    ItemList::factory()->for($owner)->create(['name' => 'Femton tecken!!', 'is_public' => true, 'context_id' => $owner->currentContextId()]);
+
+    $content = $this->actingAs($owner)
+        ->get(route('lists.index'))
+        ->assertSuccessful()
+        ->getContent();
+
+    preg_match('/<div data-chip-row.*?<\/div>/s', $content, $row);
+
+    expect($row[0])->toContain('Sommarstugan...')
+        ->not->toContain('Sommarstugans saker<')
+        ->toContain('title="Sommarstugans saker"')
+        // Exactly 15 characters: kept whole, no title.
+        ->toContain('Femton tecken!!')
+        ->not->toContain('title="Femton tecken!!"')
+        // The heading over the items still has the whole name.
+        ->and($content)->toContain('Sommarstugans saker');
+});
+
