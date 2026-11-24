@@ -11,6 +11,8 @@
         </span>
     </a>
 
+    <x-ui.copy-button :text="$bookmark->url" :label="__('bookmarks.copy_link')" />
+
     @can('delete', $bookmark)
         <form method="POST" action="{{ route('bookmarks.destroy', $bookmark) }}" onsubmit="return confirm(@js(__('bookmarks.confirm_delete')))">
             @csrf

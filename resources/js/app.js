@@ -1,6 +1,7 @@
 import Alpine from 'alpinejs';
 import sort from '@alpinejs/sort';
 import { avatarPicker } from './avatar-picker.js';
+import { copyText } from './copy-text.js';
 import { mealPlanner } from './meal-planner.js';
 import { mealRating } from './meal-rating.js';
 import { formatPostedTimes } from './posted-at.js';
@@ -27,6 +28,7 @@ function persistDeviceTheme(theme) {
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('avatarPicker', avatarPicker);
+    Alpine.data('copyText', copyText);
     Alpine.data('mealPlanner', mealPlanner);
     Alpine.data('mealRating', mealRating);
 
@@ -137,29 +139,6 @@ document.addEventListener('alpine:init', () => {
             const version = Number(payload.version);
 
             return Number.isFinite(version) ? version : null;
-        },
-    }));
-
-    Alpine.data('copyText', () => ({
-        copied: false,
-        timer: null,
-
-        destroy() {
-            window.clearTimeout(this.timer);
-        },
-
-        copy(value) {
-            if (! navigator.clipboard?.writeText) {
-                return;
-            }
-
-            navigator.clipboard.writeText(value).then(() => {
-                this.copied = true;
-                window.clearTimeout(this.timer);
-                this.timer = window.setTimeout(() => {
-                    this.copied = false;
-                }, 2000);
-            }).catch(() => {});
         },
     }));
 

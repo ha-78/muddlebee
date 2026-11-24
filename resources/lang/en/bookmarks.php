@@ -9,6 +9,7 @@ return [
     'created_at' => 'Created',
     'is_public' => 'Shared in this context',
     'save' => 'Save',
+    'copy_link' => 'Copy link',
     'delete' => 'Delete bookmark',
     'confirm_delete' => 'Delete this bookmark?',
     'empty' => 'No bookmarks yet.',

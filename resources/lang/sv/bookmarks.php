@@ -9,6 +9,7 @@ return [
     'created_at' => 'Skapad',
     'is_public' => 'Delat i den här kontexten',
     'save' => 'Spara',
+    'copy_link' => 'Kopiera länk',
     'delete' => 'Ta bort bokmärke',
     'confirm_delete' => 'Ta bort det här bokmärket?',
     'empty' => 'Inga bokmärken ännu.',

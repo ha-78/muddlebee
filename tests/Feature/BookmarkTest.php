@@ -268,3 +268,21 @@ it('refuses to delete a bookmark someone else created', function () {
 
     expect(Bookmark::query()->find($bookmark->id))->not->toBeNull();
 });
+
+it('shows a copy button with the bookmark link on every bookmark', function () {
+    $reader = User::factory()->withRole(App\Enums\Role::Reader)->create();
+    Bookmark::factory()->create([
+        'name' => 'Recept',
+        'url' => 'https://example.com/recept?a=1&b=2',
+        'is_public' => true,
+        'context_id' => $reader->currentContextId(),
+    ]);
+
+    $this->actingAs($reader)
+        ->get(route('bookmarks.index'))
+        ->assertSuccessful()
+        ->assertSee('x-data="copyText"', false)
+        ->assertSee('data-copy="https://example.com/recept?a=1&amp;b=2"', false)
+        ->assertSee('aria-label="'.__('bookmarks.copy_link').'"', false)
+        ->assertDontSee('var(--color-', false);
+});
