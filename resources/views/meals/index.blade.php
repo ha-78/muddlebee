@@ -8,7 +8,7 @@
 
         <x-ui.segmented
             :label="__('meals.meals')"
-            :options="collect(App\Enums\MealStatus::tabs())->map(fn ($tab) => [
+            :options="collect($tabs)->map(fn ($tab) => [
                 'label' => $tab->tabLabel(),
                 'href' => route('meals.index', ['status' => $tab->value]),
                 'selected' => $tab === $status,

@@ -57,6 +57,25 @@ class MealService
         return $query->orderByDesc($query->qualifyColumn('id'))->get();
     }
 
+    /**
+     * The tabs to show on the meals page, in order. "Bortvalda" is left out while the household
+     * has no discarded meals.
+     *
+     * @return list<MealStatus>
+     */
+    public function tabs(User $user): array
+    {
+        $hasDiscarded = Meal::query()
+            ->forContext($user)
+            ->where('status', MealStatus::Discarded)
+            ->exists();
+
+        return array_values(array_filter(
+            MealStatus::tabs(),
+            fn (MealStatus $tab): bool => $tab !== MealStatus::Discarded || $hasDiscarded,
+        ));
+    }
+
     public function create(User $owner, string $name, ?string $recipeLink, ?string $comment): Meal
     {
         if (! $owner->can('create', Meal::class)) {

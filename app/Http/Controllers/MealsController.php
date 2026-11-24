@@ -21,12 +21,21 @@ use Illuminate\View\View;
 
 class MealsController extends Controller
 {
-    public function index(Request $request, MealService $meals, CalendarService $calendar): View
+    public function index(Request $request, MealService $meals, CalendarService $calendar): View|RedirectResponse
     {
         Gate::authorize('viewAny', Meal::class);
 
         $user = $request->user();
         $status = MealStatus::fromTab($request->query('status'));
+        $tabs = $meals->tabs($user);
+
+        // A hidden tab (Bortvalda with nothing in it, e.g. after restoring the last meal) goes to the wishlist.
+        // Keep the flash message from the action that led here.
+        if (! in_array($status, $tabs, true)) {
+            $request->session()->reflash();
+
+            return to_route('meals.index');
+        }
 
         if ($status === MealStatus::Planned) {
             $days = $calendar->days($user, today(), CalendarService::HORIZON);
@@ -34,6 +43,7 @@ class MealsController extends Controller
 
             return view('meals.index', [
                 'status' => $status,
+                'tabs' => $tabs,
                 'meals' => collect(),
                 'days' => $days,
                 'later' => $meals->plannedFrom($user, today()->addDays(CalendarService::HORIZON)),
@@ -47,6 +57,7 @@ class MealsController extends Controller
 
         return view('meals.index', [
             'status' => $status,
+            'tabs' => $tabs,
             'sort' => $sort,
             'meals' => $meals->list($user, $status, $sort),
             'shortlist' => $status === MealStatus::Wishlist ? $meals->list($user, MealStatus::Shortlist) : collect(),

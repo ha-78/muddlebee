@@ -28,8 +28,8 @@ it('shows the meals page with tabs and the wish card in the meals color', functi
         ->assertSeeInOrder([
             __('meals.tabs.wishlist'),
             __('meals.tabs.planned'),
-            __('meals.tabs.discarded'),
         ])
+        ->assertDontSee(__('meals.tabs.discarded'))
         ->assertDontSee('href="'.route('meals.index', ['status' => 'shortlist']).'"', false)
         ->assertDontSee(__('meals.tabs.shortlist'))
         ->assertSee('aria-current="page"', false)
@@ -338,4 +338,41 @@ it('shows the move buttons only to those who may move meals', function () {
         ->assertSee('Önskad')
         ->assertDontSee(__('meals.move_to.shortlist'))
         ->assertDontSee('action="'.route('meals.status', Meal::query()->where('name', 'Önskad')->sole()).'"', false);
+});
+
+it('shows the Bortvalda tab only when the household has discarded meals', function () {
+    $user = User::factory()->create();
+    $elsewhere = Context::query()->create(['name' => 'Annan']);
+    Meal::factory()->create(['status' => MealStatus::Discarded, 'context_id' => $elsewhere->id]);
+
+    $this->actingAs($user)
+        ->get(route('meals.index'))
+        ->assertSuccessful()
+        ->assertDontSee(__('meals.tabs.discarded'))
+        ->assertDontSee('href="'.route('meals.index', ['status' => 'discarded']).'"', false);
+
+    $this->actingAs($user)
+        ->get(route('meals.index', ['status' => 'discarded']))
+        ->assertRedirect(route('meals.index'));
+
+    Meal::factory()->for($user)->create(['name' => 'Slängd soppa', 'status' => MealStatus::Discarded]);
+
+    $this->actingAs($user)
+        ->get(route('meals.index'))
+        ->assertSuccessful()
+        ->assertSeeInOrder([__('meals.tabs.wishlist'), __('meals.tabs.planned'), __('meals.tabs.discarded')]);
+});
+
+it('goes to the wishlist with the message when the last discarded meal is restored', function () {
+    $user = User::factory()->withFeatures(Feature::AddMealsToShortlist)->create();
+    $meal = Meal::factory()->for($user)->create(['name' => 'Lasagne', 'status' => MealStatus::Discarded]);
+
+    $this->actingAs($user)
+        ->followingRedirects()
+        ->patch(route('meals.status', $meal), ['status' => MealStatus::Wishlist->value])
+        ->assertSuccessful()
+        ->assertSee(__('meals.moved.wishlist', ['name' => 'Lasagne']))
+        ->assertDontSee(__('meals.tabs.discarded'));
+
+    expect($meal->fresh()->status)->toBe(MealStatus::Wishlist);
 });
