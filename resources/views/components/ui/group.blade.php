@@ -19,7 +19,17 @@
         </div>
     @endif
 
-    <div class="divide-y divide-surface-line overflow-hidden rounded-card border border-surface-line bg-surface">
-        {{ $slot }}
-    </div>
+    @if (\App\Enums\Season::is(\App\Enums\Season::Christmas))
+        {{-- A holly sprig on the card's top-right corner (APP_SEASON=christmas). --}}
+        <div class="relative">
+            <div class="divide-y divide-surface-line overflow-hidden rounded-card border border-surface-line bg-surface">
+                {{ $slot }}
+            </div>
+            <x-season.holly class="absolute -top-3 -right-2 z-10 w-10" />
+        </div>
+    @else
+        <div class="divide-y divide-surface-line overflow-hidden rounded-card border border-surface-line bg-surface">
+            {{ $slot }}
+        </div>
+    @endif
 </section>

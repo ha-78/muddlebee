@@ -112,6 +112,20 @@
     --logo-wing: var(--color-white);
 }
 
+/* Seasonal decorations (APP_SEASON) keep their own colors in every section and theme,
+   picked from the palette: holly from the greens, berries and the hat from the burgundies. */
+:root {
+    --decor-holly: var(--color-a-4);
+    --decor-holly-dark: var(--color-a-5);
+    --decor-holly-line: var(--color-a-5);
+    --decor-berry: var(--color-b-3);
+    --decor-berry-line: var(--color-b-4);
+    --decor-hat: var(--color-b-4);
+    --decor-fur: var(--color-white);
+    --decor-gold: var(--color-c-3);
+    --decor-snow: var(--color-white);
+}
+
 /* Roles are set on :root and [data-color] together. A var(--s-*) declared only
    on :root would resolve there and ignore a nested letter. */
 :root,
@@ -220,6 +234,15 @@ html[data-theme='dark'] :is(input, textarea, select):not([type='checkbox']):not(
     --color-logo-light: var(--logo-light);
     --color-logo-mid: var(--logo-mid);
     --color-logo-wing: var(--logo-wing);
+    --color-decor-holly: var(--decor-holly);
+    --color-decor-holly-dark: var(--decor-holly-dark);
+    --color-decor-holly-line: var(--decor-holly-line);
+    --color-decor-berry: var(--decor-berry);
+    --color-decor-berry-line: var(--decor-berry-line);
+    --color-decor-hat: var(--decor-hat);
+    --color-decor-fur: var(--decor-fur);
+    --color-decor-gold: var(--decor-gold);
+    --color-decor-snow: var(--decor-snow);
     --font-logo: 'Fredoka', ui-rounded, 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
     --color-field: var(--field);
 }
@@ -272,3 +295,57 @@ html[data-theme='dark'] :is(input, textarea, select):not([type='checkbox']):not(
         border-color: var(--primary-ink);
     }
 }
+
+/* Seasonal decorations: snow drifting through the top bar and twinkling lights under it.
+   With reduced motion the flakes stay put and the lights stay on. */
+@keyframes decor-snow {
+    0% {
+        transform: translateY(-6px);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 0.9;
+    }
+
+    85% {
+        opacity: 0.9;
+    }
+
+    100% {
+        transform: translateY(58px);
+        opacity: 0;
+    }
+}
+
+@keyframes decor-twinkle {
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.35;
+    }
+}
+
+.decor-snow {
+    animation: decor-snow 8s linear infinite;
+}
+
+.decor-twinkle {
+    animation: decor-twinkle 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .decor-snow {
+        animation: none;
+        opacity: 0.7;
+        transform: translateY(var(--decor-rest, 24px));
+    }
+
+    .decor-twinkle {
+        animation: none;
+    }
+}
+

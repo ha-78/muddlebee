@@ -3,6 +3,7 @@
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     data-section="{{ $section->color() }}"
     data-color="{{ $section->color() }}"
+    @if (\App\Enums\Season::current()) data-season="{{ \App\Enums\Season::current()->value }}" @endif
 >
     <head>
         <meta charset="utf-8">

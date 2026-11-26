@@ -3,7 +3,12 @@
 ])
 
 <header class="sticky top-0 z-30 h-14 bg-bar text-ink">
-    <div class="mx-auto flex h-full w-full max-w-5xl items-center gap-1 px-2 sm:px-4">
+    @if (\App\Enums\Season::is(\App\Enums\Season::Christmas))
+        <x-season.snow />
+        <x-season.lights class="absolute inset-x-0 top-full" />
+    @endif
+
+    <div class="relative mx-auto flex h-full w-full max-w-5xl items-center gap-1 px-2 sm:px-4">
         @isset($leading)
             {{ $leading }}
         @endisset

@@ -24,4 +24,13 @@
     <circle cx="25.1" cy="57" r="0.95" class="fill-logo-wing" />
     <circle cx="35.1" cy="57" r="0.95" class="fill-logo-wing" />
     <path d="M27 64.5 Q31 68.5 35 64.5" fill="none" class="stroke-logo-line" stroke-width="2.6" stroke-linecap="round" />
+
+    @if (\App\Enums\Season::is(\App\Enums\Season::Christmas))
+        {{-- Santa hat on the head (APP_SEASON=christmas). --}}
+        <g data-decor="hat" class="stroke-logo-line" stroke-width="3" stroke-linejoin="round">
+            <path d="M17 50 Q 22 24 46 22 Q 56 30 47 48 Z" class="fill-decor-hat" />
+            <rect x="14" y="44" width="36" height="9" rx="4.5" class="fill-decor-fur" stroke-width="2.5" />
+            <circle cx="48" cy="22" r="6" class="fill-decor-fur" stroke-width="2.5" />
+        </g>
+    @endif
 </svg>

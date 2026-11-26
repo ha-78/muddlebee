@@ -7,10 +7,14 @@
     data-color="{{ \App\Enums\Section::Calendar->color() }}"
     {{ $attributes->class([
         'rounded-[20px] bg-tonal text-tonal-ink',
-        'flex gap-3.5 p-4' => $big,
+        'relative flex gap-3.5 p-4' => $big,
         'relative flex min-w-0 flex-col gap-1.5 px-2.5 pt-2.5 pb-9' => ! $big,
     ]) }}
 >
+    @if ($big && \App\Enums\Season::is(\App\Enums\Season::Christmas))
+        <x-season.holly class="absolute -top-3 -right-2 z-10 w-11" />
+    @endif
+
     @if ($big)
         <div class="flex w-24 shrink-0 flex-col items-center justify-center rounded-card bg-surface px-1 py-2 text-center">
             <span class="text-[12px] font-bold uppercase tracking-wide">{{ $label }}</span>

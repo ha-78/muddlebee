@@ -3,6 +3,7 @@
     lang="{{ str_replace('_', '-', app()->getLocale()) }}"
     data-section="{{ $section->color() }}"
     data-color="{{ $section->color() }}"
+    @if (\App\Enums\Season::current()) data-season="{{ \App\Enums\Season::current()->value }}" @endif
     data-posted-today="{{ __('threads.today') }}"
     data-posted-yesterday="{{ __('threads.yesterday') }}"
     data-posted-days-ago="{{ __('threads.days_ago_phrase') }}"
