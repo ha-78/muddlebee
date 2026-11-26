@@ -1,6 +1,9 @@
 {{-- The "Planerat" tab: the next days with their meals, the shortlist beside them on wide screens,
      meals planned further ahead and the ones planned before. Planners can drag meals by their grip
-     between days and the shortlist (mealPlanner in app.js); every drag has a tap path too. --}}
+     between days and the shortlist (mealPlanner in app.js); every drag has a tap path too.
+     Every zone sets the grip as its handle: @alpinejs/sort only does that by itself when the zone
+     already has a grip when the page loads, so an empty day would otherwise let its placeholder text
+     (and any meal dropped there later) be dragged from anywhere, which gets in the way of scrolling. --}}
 @php
     $canPlan = auth()->user()->can('plan', App\Models\Meal::class);
     $canWish = auth()->user()->can('create', App\Models\Meal::class);
@@ -45,7 +48,7 @@
                 <div
                     data-zone="{{ $day->datetime }}"
                     class="min-h-12 divide-y divide-surface-line"
-                    @if ($canPlan) x-sort="drop($item, @js($day->datetime))" x-sort:group="meals" x-sort:config="{ sort: false }" @endif
+                    @if ($canPlan) x-sort="drop($item, @js($day->datetime))" x-sort:group="meals" x-sort:config="{ sort: false, handle: '[x-sort\\:handle]' }" @endif
                 >
                     @foreach ($day->loaded('meals') as $meal)
                         @include('meals.planned-meal', ['meal' => $meal, 'canPlan' => $canPlan, 'sortable' => true])
@@ -91,7 +94,7 @@
     @if ($canPlan)
         <x-ui.group :heading="__('meals.tabs.shortlist')" class="hidden lg:sticky lg:top-4 lg:block">
             <x-slot:actions>{{ __('meals.drag_hint') }}</x-slot:actions>
-            <div data-zone="" class="min-h-12 divide-y divide-surface-line" x-sort="drop($item, '')" x-sort:group="meals" x-sort:config="{ sort: false }">
+            <div data-zone="" class="min-h-12 divide-y divide-surface-line" x-sort="drop($item, '')" x-sort:group="meals" x-sort:config="{ sort: false, handle: '[x-sort\\:handle]' }">
                 @foreach ($shortlist as $meal)
                     <div
                         class="flex min-h-12 items-center gap-1 bg-surface py-2 pr-4"

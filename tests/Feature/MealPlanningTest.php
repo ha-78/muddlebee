@@ -292,6 +292,9 @@ it('lets planners drag meals between days and the shortlist', function () {
         ->assertSee('data-zone=""', false)
         ->assertSee('x-sort:group="meals"', false)
         ->assertSee('x-sort:handle', false)
+        // Only the grip starts a drag, also on empty days (the placeholder text can't be dragged).
+        ->assertSee('x-sort:config="{ sort: false, handle: \'[x-sort\\\\:handle]\' }"', false)
+        ->assertDontSee('x-sort:config="{ sort: false }"', false)
         ->assertSee('data-plan-url="'.route('meals.plan', $meal).'"', false)
         ->assertSee('data-unplan-url="'.route('meals.unplan', $meal).'"', false)
         ->assertSee(__('meals.drag_hint'));
